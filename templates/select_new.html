@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anki Diff Tool - New UI with Debug</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Debug mode styles */
+        .debug-mode .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .debug-mode .debug-hidden {
+            background: #ffebee !important;
+            border: 2px dashed #f44336 !important;
+        }
+        
+        .debug-mode .debug-visible {
+            background: #e8f5e8 !important;
+            border: 2px solid #4caf50 !important;
+        }
+        
+        /* Card styles */
+        .anki-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .anki-question {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .anki-answer {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .card-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Tab specific styles */
+        .tab-pane {
+            padding: 20px;
+            min-height: 400px;
+        }
+        
+        /* Debug console */
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            z-index: 9999;
+            border-top: 2px solid #333;
+            padding: 10px;
+            display: none;
+        }
+        
+        #debug-console.show {
+            display: block;
+        }
+        
+        .debug-entry {
+            margin: 2px 0;
+        }
+        
+        .debug-error {
+            color: #ff4444;
+        }
+        
+        .debug-warn {
+            color: #ffaa00;
+        }
+        
+        .debug-info {
+            color: #00aa00;
+        }
+        
+        /* Debug buttons */
+        .debug-controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+        }
+        
+        .stats-badge {
+            font-size: 0.9em;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Debug Controls -->
+    <div class="debug-controls">
+        <button id="toggle-debug" class="btn btn-sm btn-warning">🐛 Debug</button>
+        <button id="toggle-console" class="btn btn-sm btn-dark">📟 Console</button>
+        <button id="test-tabs" class="btn btn-sm btn-info">🧪 Test</button>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1>Anki Diff Tool - Enhanced UI</h1>
+                <div class="alert alert-info">
+                    <strong>Test Data Loaded:</strong>
+                    <span class="badge bg-primary stats-badge">Identical: {{ data.stats.identical }}</span>
+                    <span class="badge bg-warning stats-badge">Different: {{ data.stats.different }}</span>
+                    <span class="badge bg-success stats-badge">{{ data.file1_name }}: {{ data.stats.only_file1 }}</span>
+                    <span class="badge bg-info stats-badge">{{ data.file2_name }}: {{ data.stats.only_file2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Info Panel -->
+        <div id="debug-panel" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🔍 Debug Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>Data Counts</h6>
+                                <div id="debug-data-counts"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>DOM Elements</h6>
+                                <div id="debug-dom-counts"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Visibility Status</h6>
+                                <div id="debug-visibility"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Current State</h6>
+                                <div id="debug-state"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-3" id="main-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" 
+                        id="different-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#different-pane" 
+                        type="button" 
+                        role="tab"
+                        data-tab-type="different">
+                    🔄 Different Cards ({{ data.stats.different }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="identical-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#identical-pane" 
+                        type="button" 
+                        role="tab"
+                        data-tab-type="identical">
+                    ✅ Identical Cards ({{ data.stats.identical }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="unique1-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#unique1-pane" 
+                        type="button" 
+                        role="tab"
+                        data-tab-type="unique1">
+                    📁 {{ data.file1_name }} Only ({{ data.stats.only_file1 }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="unique2-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#unique2-pane" 
+                        type="button" 
+                        role="tab"
+                        data-tab-type="unique2">
+                    📁 {{ data.file2_name }} Only ({{ data.stats.only_file2 }})
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="main-tab-content">
+            
+            <!-- Different Cards Tab -->
+            <div class="tab-pane fade show active" id="different-pane" role="tabpanel" data-tab-type="different">
+                <h4>Cards with Different Answers</h4>
+                <p class="text-muted">Choose which version to keep for each card:</p>
+                
+                <div id="different-cards-container">
+                    {% for card in data.different_cards %}
+                    <div class="anki-card different-card" data-card-index="{{ loop.index0 }}" data-card-type="different">
+                        <div class="anki-question">{{ card.question }}</div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>{{ data.file1_name }}</h6>
+                                <div class="anki-answer">{{ card.file1_answer }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>{{ data.file2_name }}</h6>
+                                <div class="anki-answer">{{ card.file2_answer }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-controls">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" 
+                                       name="different-{{ loop.index0 }}" 
+                                       id="diff-file1-{{ loop.index0 }}" 
+                                       value="file1" 
+                                       {% if card.selected == 'file1' %}checked{% endif %}>
+                                <label class="form-check-label" for="diff-file1-{{ loop.index0 }}">
+                                    Use {{ data.file1_name }}
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" 
+                                       name="different-{{ loop.index0 }}" 
+                                       id="diff-file2-{{ loop.index0 }}" 
+                                       value="file2" 
+                                       {% if card.selected == 'file2' %}checked{% endif %}>
+                                <label class="form-check-label" for="diff-file2-{{ loop.index0 }}">
+                                    Use {{ data.file2_name }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Identical Cards Tab -->
+            <div class="tab-pane fade" id="identical-pane" role="tabpanel" data-tab-type="identical">
+                <h4>Identical Cards</h4>
+                <p class="text-muted">These cards are the same in both files and will be included automatically:</p>
+                
+                <div id="identical-cards-container">
+                    {% for card in data.identical_cards %}
+                    <div class="anki-card identical-card" data-card-index="{{ loop.index0 }}" data-card-type="identical">
+                        <div class="anki-question">{{ card.question }}</div>
+                        <div class="anki-answer">{{ card.answer }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Unique File 1 Tab -->
+            <div class="tab-pane fade" id="unique1-pane" role="tabpanel" data-tab-type="unique1">
+                <h4>Cards Only in {{ data.file1_name }}</h4>
+                <p class="text-muted">Select which cards to include in the merged file:</p>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="select-all-unique1" checked>
+                        <label class="form-check-label" for="select-all-unique1">
+                            Select All Cards from {{ data.file1_name }}
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="unique1-cards-container">
+                    {% for card in data.unique_file1 %}
+                    <div class="anki-card unique1-card" data-card-index="{{ loop.index0 }}" data-card-type="unique1">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input unique1-checkbox" type="checkbox" 
+                                   id="unique1-{{ loop.index0 }}" 
+                                   data-card-index="{{ loop.index0 }}"
+                                   {% if card.selected %}checked{% endif %}>
+                            <label class="form-check-label" for="unique1-{{ loop.index0 }}">
+                                Include this card
+                            </label>
+                        </div>
+                        <div class="anki-question">{{ card.question }}</div>
+                        <div class="anki-answer">{{ card.answer }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Unique File 2 Tab -->
+            <div class="tab-pane fade" id="unique2-pane" role="tabpanel" data-tab-type="unique2">
+                <h4>Cards Only in {{ data.file2_name }}</h4>
+                <p class="text-muted">Select which cards to include in the merged file:</p>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="select-all-unique2" checked>
+                        <label class="form-check-label" for="select-all-unique2">
+                            Select All Cards from {{ data.file2_name }}
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="unique2-cards-container">
+                    {% for card in data.unique_file2 %}
+                    <div class="anki-card unique2-card" data-card-index="{{ loop.index0 }}" data-card-type="unique2">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input unique2-checkbox" type="checkbox" 
+                                   id="unique2-{{ loop.index0 }}" 
+                                   data-card-index="{{ loop.index0 }}"
+                                   {% if card.selected %}checked{% endif %}>
+                            <label class="form-check-label" for="unique2-{{ loop.index0 }}">
+                                Include this card
+                            </label>
+                        </div>
+                        <div class="anki-question">{{ card.question }}</div>
+                        <div class="anki-answer">{{ card.answer }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex gap-2">
+                    <button id="save-selections" class="btn btn-primary">💾 Save Selections</button>
+                    <button id="generate-export" class="btn btn-success">📥 Generate Export</button>
+                    <button id="reset-selections" class="btn btn-outline-warning">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Console -->
+    <div id="debug-console">
+        <div style="background: #333; padding: 5px; margin-bottom: 10px;">
+            <strong>🐛 Debug Console</strong>
+            <button id="clear-console" class="btn btn-sm btn-outline-light float-end">Clear</button>
+        </div>
+        <div id="console-output"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notification-toast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto" id="toast-title">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toast-message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =============================================================================
+        // ANKI DIFF UI - Enhanced Version with Comprehensive Logging and Testing
+        // =============================================================================
+        
+        class DebugLogger {
+            constructor() {
+                this.consoleElement = null;
+                this.outputElement = null;
+                this.isVisible = false;
+                this.logHistory = [];
+            }
+            
+            init() {
+                this.consoleElement = document.getElementById('debug-console');
+                this.outputElement = document.getElementById('console-output');
+                this.log('🔧 Debug Logger initialized', 'info');
+            }
+            
+            log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = {
+                    timestamp,
+                    message,
+                    type,
+                    fullMessage: `[${timestamp}] ${message}`
+                };
+                
+                this.logHistory.push(entry);
+                console.log(`%c${entry.fullMessage}`, this.getConsoleStyle(type));
+                
+                if (this.outputElement) {
+                    this.updateVisualConsole();
+                }
+            }
+            
+            error(message) { this.log(`❌ ${message}`, 'error'); }
+            warn(message) { this.log(`⚠️ ${message}`, 'warn'); }
+            info(message) { this.log(`ℹ️ ${message}`, 'info'); }
+            success(message) { this.log(`✅ ${message}`, 'success'); }
+            
+            getConsoleStyle(type) {
+                const styles = {
+                    error: 'color: #ff4444; font-weight: bold;',
+                    warn: 'color: #ffaa00; font-weight: bold;',
+                    info: 'color: #00aa00;',
+                    success: 'color: #00ff00; font-weight: bold;'
+                };
+                return styles[type] || styles.info;
+            }
+            
+            updateVisualConsole() {
+                if (!this.outputElement) return;
+                
+                const lastEntries = this.logHistory.slice(-50); // Show last 50 entries
+                this.outputElement.innerHTML = lastEntries
+                    .map(entry => `<div class="debug-entry debug-${entry.type}">${entry.fullMessage}</div>`)
+                    .join('');
+                    
+                this.outputElement.scrollTop = this.outputElement.scrollHeight;
+            }
+            
+            toggle() {
+                this.isVisible = !this.isVisible;
+                if (this.consoleElement) {
+                    this.consoleElement.classList.toggle('show', this.isVisible);
+                }
+            }
+            
+            clear() {
+                this.logHistory = [];
+                if (this.outputElement) {
+                    this.outputElement.innerHTML = '';
+                }
+                this.log('Console cleared', 'info');
+            }
+        }
+        
+        class AnkiDiffUI {
+            constructor() {
+                this.logger = new DebugLogger();
+                this.data = null;
+                this.debugMode = false;
+                this.currentTab = 'different';
+                this.cardCounts = {};
+                this.visibilityStatus = {};
+                
+                this.logger.log('🚀 AnkiDiffUI initializing...', 'info');
+            }
+            
+            async init() {
+                try {
+                    this.logger.log('Initializing UI components...', 'info');
+                    
+                    // Initialize debug logger
+                    this.logger.init();
+                    
+                    // Load data from template
+                    this.loadData();
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    // Initialize tabs
+                    this.initializeTabs();
+                    
+                    // Count and analyze DOM elements
+                    this.analyzeDOM();
+                    
+                    // Test all functionality
+                    this.runInitialTests();
+                    
+                    this.logger.success('UI initialization complete!');
+                    
+                } catch (error) {
+                    this.logger.error(`Failed to initialize UI: ${error.message}`);
+                    throw error;
+                }
+            }
+            
+            loadData() {
+                try {
+                    // Get data from Jinja template
+                    this.data = {{ data|tojson|safe }};
+                    
+                    this.logger.info(`Data loaded successfully:`);
+                    this.logger.info(`  - Identical: ${this.data.stats.identical}`);
+                    this.logger.info(`  - Different: ${this.data.stats.different}`);
+                    this.logger.info(`  - Unique File1: ${this.data.stats.only_file1}`);
+                    this.logger.info(`  - Unique File2: ${this.data.stats.only_file2}`);
+                    
+                } catch (error) {
+                    this.logger.error(`Failed to load data: ${error.message}`);
+                    throw error;
+                }
+            }
+            
+            setupEventListeners() {
+                this.logger.info('Setting up event listeners...');
+                
+                // Debug controls
+                document.getElementById('toggle-debug')?.addEventListener('click', () => this.toggleDebugMode());
+                document.getElementById('toggle-console')?.addEventListener('click', () => this.logger.toggle());
+                document.getElementById('clear-console')?.addEventListener('click', () => this.logger.clear());
+                document.getElementById('test-tabs')?.addEventListener('click', () => this.runTabTests());
+                
+                // Tab switching
+                document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                    tab.addEventListener('shown.bs.tab', (event) => {
+                        const tabType = event.target.getAttribute('data-tab-type');
+                        this.onTabChange(tabType);
+                    });
+                });
+                
+                // Card selection controls
+                this.setupCardControls();
+                
+                // Action buttons
+                document.getElementById('save-selections')?.addEventListener('click', () => this.saveSelections());
+                document.getElementById('generate-export')?.addEventListener('click', () => this.generateExport());
+                document.getElementById('reset-selections')?.addEventListener('click', () => this.resetSelections());
+                
+                this.logger.success('Event listeners setup complete');
+            }
+            
+            setupCardControls() {
+                this.logger.info('Setting up card selection controls...');
+                
+                // Different cards radio buttons
+                document.querySelectorAll('input[type="radio"][name^="different-"]').forEach(radio => {
+                    radio.addEventListener('change', (event) => {
+                        const cardIndex = event.target.name.split('-')[1];
+                        const selection = event.target.value;
+                        this.updateDifferentCardSelection(cardIndex, selection);
+                    });
+                });
+                
+                // Unique cards checkboxes
+                document.querySelectorAll('.unique1-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (event) => {
+                        const cardIndex = event.target.getAttribute('data-card-index');
+                        this.updateUniqueCardSelection('unique1', cardIndex, event.target.checked);
+                    });
+                });
+                
+                document.querySelectorAll('.unique2-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (event) => {
+                        const cardIndex = event.target.getAttribute('data-card-index');
+                        this.updateUniqueCardSelection('unique2', cardIndex, event.target.checked);
+                    });
+                });
+                
+                // Select all toggles
+                document.getElementById('select-all-unique1')?.addEventListener('change', (event) => {
+                    this.toggleAllUniqueCards('unique1', event.target.checked);
+                });
+                
+                document.getElementById('select-all-unique2')?.addEventListener('change', (event) => {
+                    this.toggleAllUniqueCards('unique2', event.target.checked);
+                });
+                
+                this.logger.success('Card controls setup complete');
+            }
+            
+            initializeTabs() {
+                this.logger.info('Initializing Bootstrap tabs...');
+                
+                try {
+                    // Verify all tab elements exist
+                    const tabs = ['different', 'identical', 'unique1', 'unique2'];
+                    const missingTabs = [];
+                    
+                    tabs.forEach(tabType => {
+                        const tabButton = document.getElementById(`${tabType}-tab`);
+                        const tabPane = document.getElementById(`${tabType}-pane`);
+                        
+                        if (!tabButton) missingTabs.push(`${tabType}-tab`);
+                        if (!tabPane) missingTabs.push(`${tabType}-pane`);
+                    });
+                    
+                    if (missingTabs.length > 0) {
+                        this.logger.error(`Missing tab elements: ${missingTabs.join(', ')}`);
+                        return;
+                    }
+                    
+                    // Initialize current tab
+                    this.currentTab = 'different';
+                    this.logger.info(`Current tab set to: ${this.currentTab}`);
+                    
+                    // Make sure content is visible in all tabs
+                    this.ensureTabContentVisibility();
+                    
+                    this.logger.success('Tab initialization complete');
+                    
+                } catch (error) {
+                    this.logger.error(`Tab initialization failed: ${error.message}`);
+                }
+            }
+            
+            ensureTabContentVisibility() {
+                this.logger.info('Ensuring all tab content is visible...');
+                
+                const tabs = ['different', 'identical', 'unique1', 'unique2'];
+                
+                tabs.forEach(tabType => {
+                    const cards = document.querySelectorAll(`.${tabType}-card`);
+                    this.logger.info(`${tabType}: Found ${cards.length} cards in DOM`);
+                    
+                    // Make sure all cards are visible (no display: none)
+                    cards.forEach((card, index) => {
+                        card.style.display = '';
+                        if (this.debugMode) {
+                            card.classList.add('debug-visible');
+                        }
+                    });
+                    
+                    this.visibilityStatus[tabType] = {
+                        total: cards.length,
+                        visible: cards.length,
+                        hidden: 0
+                    };
+                });
+                
+                this.updateDebugInfo();
+                this.logger.success('All tab content visibility ensured');
+            }
+            
+            analyzeDOM() {
+                this.logger.info('Analyzing DOM structure...');
+                
+                const analysis = {
+                    tabs: {
+                        different: document.querySelectorAll('.different-card').length,
+                        identical: document.querySelectorAll('.identical-card').length,
+                        unique1: document.querySelectorAll('.unique1-card').length,
+                        unique2: document.querySelectorAll('.unique2-card').length
+                    },
+                    tabPanes: {
+                        different: document.getElementById('different-pane') ? 'exists' : 'missing',
+                        identical: document.getElementById('identical-pane') ? 'exists' : 'missing',
+                        unique1: document.getElementById('unique1-pane') ? 'exists' : 'missing',
+                        unique2: document.getElementById('unique2-pane') ? 'exists' : 'missing'
+                    }
+                };
+                
+                this.cardCounts = analysis.tabs;
+                
+                this.logger.info('DOM Analysis Results:');
+                this.logger.info(`  Card counts: ${JSON.stringify(analysis.tabs)}`);
+                this.logger.info(`  Tab panes: ${JSON.stringify(analysis.tabPanes)}`);
+                
+                // Verify counts match data
+                this.validateCardCounts();
+            }
+            
+            validateCardCounts() {
+                this.logger.info('Validating card counts against data...');
+                
+                const validations = [
+                    { type: 'different', dom: this.cardCounts.different, data: this.data.stats.different },
+                    { type: 'identical', dom: this.cardCounts.identical, data: this.data.stats.identical },
+                    { type: 'unique1', dom: this.cardCounts.unique1, data: this.data.stats.only_file1 },
+                    { type: 'unique2', dom: this.cardCounts.unique2, data: this.data.stats.only_file2 }
+                ];
+                
+                let allValid = true;
+                
+                validations.forEach(({ type, dom, data }) => {
+                    if (dom === data) {
+                        this.logger.success(`${type}: DOM count (${dom}) matches data (${data})`);
+                    } else {
+                        this.logger.error(`${type}: DOM count (${dom}) does NOT match data (${data})`);
+                        allValid = false;
+                    }
+                });
+                
+                if (allValid) {
+                    this.logger.success('All card counts validated successfully!');
+                } else {
+                    this.logger.error('Card count validation failed!');
+                }
+            }
+            
+            onTabChange(tabType) {
+                this.logger.info(`Tab changed to: ${tabType}`);
+                this.currentTab = tabType;
+                
+                // Update debug info
+                this.updateDebugInfo();
+                
+                // Verify content is visible
+                this.verifyTabContent(tabType);
+            }
+            
+            verifyTabContent(tabType) {
+                const cards = document.querySelectorAll(`.${tabType}-card`);
+                const visibleCards = Array.from(cards).filter(card => 
+                    card.style.display !== 'none' && 
+                    !card.classList.contains('d-none')
+                );
+                
+                this.logger.info(`Tab ${tabType}: ${visibleCards.length}/${cards.length} cards visible`);
+                
+                if (visibleCards.length === 0 && cards.length > 0) {
+                    this.logger.error(`Tab ${tabType} has cards but none are visible!`);
+                } else if (visibleCards.length > 0) {
+                    this.logger.success(`Tab ${tabType} content is properly visible`);
+                }
+            }
+            
+            toggleDebugMode() {
+                this.debugMode = !this.debugMode;
+                document.body.classList.toggle('debug-mode', this.debugMode);
+                
+                const debugPanel = document.getElementById('debug-panel');
+                if (debugPanel) {
+                    debugPanel.style.display = this.debugMode ? 'block' : 'none';
+                }
+                
+                this.logger.info(`Debug mode ${this.debugMode ? 'enabled' : 'disabled'}`);
+                
+                if (this.debugMode) {
+                    this.updateDebugInfo();
+                    this.ensureTabContentVisibility(); // Re-apply debug classes
+                }
+            }
+            
+            updateDebugInfo() {
+                if (!this.debugMode) return;
+                
+                const updateElement = (id, content) => {
+                    const element = document.getElementById(id);
+                    if (element) element.innerHTML = content;
+                };
+                
+                updateElement('debug-data-counts', `
+                    <small>
+                        Different: ${this.data.stats.different}<br>
+                        Identical: ${this.data.stats.identical}<br>
+                        Unique1: ${this.data.stats.only_file1}<br>
+                        Unique2: ${this.data.stats.only_file2}
+                    </small>
+                `);
+                
+                updateElement('debug-dom-counts', `
+                    <small>
+                        Different: ${this.cardCounts.different}<br>
+                        Identical: ${this.cardCounts.identical}<br>
+                        Unique1: ${this.cardCounts.unique1}<br>
+                        Unique2: ${this.cardCounts.unique2}
+                    </small>
+                `);
+                
+                updateElement('debug-visibility', `
+                    <small>
+                        ${Object.entries(this.visibilityStatus).map(([tab, status]) => 
+                            `${tab}: ${status.visible}/${status.total}`
+                        ).join('<br>')}
+                    </small>
+                `);
+                
+                updateElement('debug-state', `
+                    <small>
+                        Current Tab: ${this.currentTab}<br>
+                        Debug Mode: ${this.debugMode}<br>
+                        Console: ${this.logger.isVisible ? 'open' : 'closed'}
+                    </small>
+                `);
+            }
+            
+            runInitialTests() {
+                this.logger.info('Running initial functionality tests...');
+                
+                // Test 1: Verify data loading
+                if (!this.data || !this.data.stats) {
+                    this.logger.error('Test 1 FAILED: Data not loaded properly');
+                    return;
+                }
+                this.logger.success('Test 1 PASSED: Data loaded successfully');
+                
+                // Test 2: Verify DOM elements
+                const requiredElements = [
+                    'different-tab', 'identical-tab', 'unique1-tab', 'unique2-tab',
+                    'different-pane', 'identical-pane', 'unique1-pane', 'unique2-pane'
+                ];
+                
+                const missingElements = requiredElements.filter(id => !document.getElementById(id));
+                if (missingElements.length > 0) {
+                    this.logger.error(`Test 2 FAILED: Missing elements: ${missingElements.join(', ')}`);
+                    return;
+                }
+                this.logger.success('Test 2 PASSED: All required DOM elements present');
+                
+                // Test 3: Verify card counts
+                this.validateCardCounts();
+                
+                this.logger.success('Initial tests completed');
+            }
+            
+            runTabTests() {
+                this.logger.info('🧪 Running comprehensive tab tests...');
+                
+                const tabs = ['different', 'identical', 'unique1', 'unique2'];
+                
+                tabs.forEach(tabType => {
+                    this.logger.info(`Testing tab: ${tabType}`);
+                    
+                    // Switch to tab
+                    const tabButton = document.getElementById(`${tabType}-tab`);
+                    if (tabButton) {
+                        tabButton.click();
+                        
+                        setTimeout(() => {
+                            // Verify content after tab switch
+                            this.verifyTabContent(tabType);
+                        }, 100);
+                    } else {
+                        this.logger.error(`Tab button not found: ${tabType}-tab`);
+                    }
+                });
+                
+                this.logger.success('Tab tests completed');
+            }
+            
+            updateDifferentCardSelection(cardIndex, selection) {
+                this.logger.info(`Different card ${cardIndex} selection changed to: ${selection}`);
+                if (this.data.different_cards[cardIndex]) {
+                    this.data.different_cards[cardIndex].selected = selection;
+                }
+            }
+            
+            updateUniqueCardSelection(tabType, cardIndex, selected) {
+                this.logger.info(`${tabType} card ${cardIndex} selection changed to: ${selected}`);
+                const cardArray = tabType === 'unique1' ? this.data.unique_file1 : this.data.unique_file2;
+                if (cardArray[cardIndex]) {
+                    cardArray[cardIndex].selected = selected;
+                }
+            }
+            
+            toggleAllUniqueCards(tabType, selected) {
+                this.logger.info(`Toggling all ${tabType} cards to: ${selected}`);
+                
+                const checkboxes = document.querySelectorAll(`.${tabType}-checkbox`);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selected;
+                    const cardIndex = checkbox.getAttribute('data-card-index');
+                    this.updateUniqueCardSelection(tabType, cardIndex, selected);
+                });
+            }
+            
+            async saveSelections() {
+                this.logger.info('Saving selections...');
+                
+                try {
+                    const response = await fetch('/save_selections', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.data)
+                    });
+                    
+                    if (response.ok) {
+                        this.logger.success('Selections saved successfully');
+                        this.showToast('Success', 'Your selections have been saved');
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    this.logger.error(`Failed to save selections: ${error.message}`);
+                    this.showToast('Error', 'Failed to save selections');
+                }
+            }
+            
+            async generateExport() {
+                this.logger.info('Generating export...');
+                
+                try {
+                    // Save first
+                    await this.saveSelections();
+                    
+                    // Then redirect to export
+                    window.location.href = '/generate_export';
+                    
+                } catch (error) {
+                    this.logger.error(`Failed to generate export: ${error.message}`);
+                }
+            }
+            
+            resetSelections() {
+                this.logger.info('Resetting selections...');
+                
+                if (confirm('Are you sure you want to reset all selections? This will reload the page.')) {
+                    window.location.href = '/reset';
+                }
+            }
+            
+            showToast(title, message) {
+                const toast = document.getElementById('notification-toast');
+                const titleElement = document.getElementById('toast-title');
+                const messageElement = document.getElementById('toast-message');
+                
+                if (toast && titleElement && messageElement) {
+                    titleElement.textContent = title;
+                    messageElement.textContent = message;
+                    
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
+                }
+            }
+        }
+        
+        // =============================================================================
+        // INITIALIZATION
+        // =============================================================================
+        
+        let ankiUI;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                ankiUI = new AnkiDiffUI();
+                await ankiUI.init();
+                
+                // Make UI available globally for debugging
+                window.ankiUI = ankiUI;
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize Anki Diff UI:', error);
+                alert('Failed to initialize the application. Please check the console for details.');
+            }
+        });
+        
+        // Global functions for console debugging
+        window.debugAnkiUI = {
+            toggleDebug: () => ankiUI?.toggleDebugMode(),
+            toggleConsole: () => ankiUI?.logger.toggle(),
+            runTests: () => ankiUI?.runTabTests(),
+            showStats: () => console.table(ankiUI?.cardCounts),
+            getData: () => ankiUI?.data,
+            getVisibility: () => ankiUI?.visibilityStatus
+        };
+        
+        console.log('🚀 Anki Diff UI Enhanced Version Loaded Successfully!');
+        console.log('🔧 Debug functions available: window.debugAnkiUI');
+        
+    </script>
+</body>
+</html>

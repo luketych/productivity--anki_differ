@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anki Diff Selection Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-form {
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Anki Diff Selection Tool</h1>
+            <p class="lead">Compare and merge your Anki exports from different devices</p>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">How it works</h5>
+                <ol>
+                    <li>Upload your Anki export files from two different sources (e.g., macOS and Android)</li>
+                    <li>Review the differences between cards</li>
+                    <li>Choose which version of each card to keep</li>
+                    <li>Generate a final Anki export file with your selections</li>
+                </ol>
+            </div>
+        </div>
+        
+        <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="file1Name">First Export Name:</label>
+                        <input type="text" class="form-control" id="file1Name" name="file1_name" value="macOS Export" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="file1">First Export File:</label>
+                        <input type="file" class="form-control" id="file1" name="file1" accept=".txt" required>
+                    </div>
+                    <div class="form-text">Upload your first Anki export file (e.g., from macOS)</div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="file2Name">Second Export Name:</label>
+                        <input type="text" class="form-control" id="file2Name" name="file2_name" value="Android Export" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="file2">Second Export File:</label>
+                        <input type="file" class="form-control" id="file2" name="file2" accept=".txt" required>
+                    </div>
+                    <div class="form-text">Upload your second Anki export file (e.g., from Android)</div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Compare Exports</button>
+            </div>
+        </form>
+
+        <!-- Use local file path option -->
+        <div class="mt-5">
+            <h4>Already have files saved locally?</h4>
+            <p>If your files are already on your computer, you can use these defaults:</p>
+            <div class="d-grid gap-2">
+                <button id="useLocalFiles" class="btn btn-outline-secondary">Use Local Files</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('useLocalFiles').addEventListener('click', function() {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/upload';
+            form.enctype = 'multipart/form-data';
+
+            // Create hidden inputs for the file paths
+            const file1Input = document.createElement('input');
+            file1Input.type = 'hidden';
+            file1Input.name = 'file1_path';
+            file1Input.value = '/Users/luketych/Dev/_productivity/anki-diff_between_backups/anki-export-macos.txt';
+            form.appendChild(file1Input);
+
+            const file2Input = document.createElement('input');
+            file2Input.type = 'hidden';
+            file2Input.name = 'file2_path';
+            file2Input.value = '/Users/luketych/Dev/_productivity/anki-diff_between_backups/anki-export-android.txt';
+            form.appendChild(file2Input);
+
+            // Create hidden inputs for the file names
+            const file1NameInput = document.createElement('input');
+            file1NameInput.type = 'hidden';
+            file1NameInput.name = 'file1_name';
+            file1NameInput.value = 'macOS Export';
+            form.appendChild(file1NameInput);
+
+            const file2NameInput = document.createElement('input');
+            file2NameInput.type = 'hidden';
+            file2NameInput.name = 'file2_name';
+            file2NameInput.value = 'Android Export';
+            form.appendChild(file2NameInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anki-diff-tool"
+version = "0.1.0"
+description = "Tool for comparing and merging Anki export files"
+requires-python = ">=3.6"
+dependencies = [
+    "flask",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]

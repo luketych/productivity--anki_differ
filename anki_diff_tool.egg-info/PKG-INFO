@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: anki-diff-tool
+Version: 0.1.0
+Summary: Tool for comparing and merging Anki export files
+Requires-Python: >=3.6
+Requires-Dist: flask
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

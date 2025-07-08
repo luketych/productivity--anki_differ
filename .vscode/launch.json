@@ -1,0 +1,58 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Anki Diff",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/anki_diff.py",
+            "args": ["${workspaceFolder}/anki-export-macos.txt", "${workspaceFolder}/anki-export-android.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run Merge Exports",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/merge_exports.py",
+            "args": ["${workspaceFolder}/anki-export-macos.txt", "${workspaceFolder}/anki-export-android.txt", "${workspaceFolder}/merged_export.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Run Web Interface",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Extract Overlapping Cards",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/selective_merge.py",
+            "args": ["extract-overlapping", "${workspaceFolder}/anki-export-macos.txt", "${workspaceFolder}/anki-export-android.txt", "${workspaceFolder}/overlapping_cards.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Generate Selection Template",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/selective_merge.py",
+            "args": ["generate-selection", "${workspaceFolder}/anki-export-macos.txt", "${workspaceFolder}/anki-export-android.txt", "${workspaceFolder}/selection"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Create Merged Export from Selection",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/selective_merge.py",
+            "args": ["create-merged-export", "${workspaceFolder}/anki-export-macos.txt", "${workspaceFolder}/anki-export-android.txt", "${workspaceFolder}/selection_selection.txt", "${workspaceFolder}/final_import.txt"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

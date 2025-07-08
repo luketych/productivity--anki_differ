@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 install:*)",
+      "Bash(jq:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(curl:*)",
+      "Bash(python test:*)",
+      "Bash(open http://127.0.0.1:5000/select)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(open http://127.0.0.1:5000/select-new)",
+      "Bash(mkdir:*)",
+      "Bash(python run_tests:*)",
+      "Bash(pytest:*)",
+      "Bash(python:*)"
+    ],
+    "deny": []
+  }
+}

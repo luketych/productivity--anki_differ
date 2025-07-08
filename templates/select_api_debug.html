@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anki Diff Tool - API Debug Version</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .debug-panel {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .network-log {
+            background: #000;
+            color: #00aaff;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 5px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .anki-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .anki-question {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .anki-answer {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            padding: 15px;
+            border-radius: 5px;
+            color: #c62828;
+        }
+        
+        .debug-controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+        }
+        
+        .tab-content {
+            min-height: 400px;
+        }
+        
+        .stats-badge {
+            font-size: 0.9em;
+            margin: 2px;
+        }
+        
+        .api-status {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Debug Controls -->
+    <div class="debug-controls">
+        <button id="toggle-debug" class="btn btn-sm btn-warning">🐛 Debug</button>
+        <button id="refresh-status" class="btn btn-sm btn-info">🔄 Refresh</button>
+        <button id="clear-logs" class="btn btn-sm btn-dark">🗑️ Clear</button>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1>Anki Diff Tool - API Debug Version</h1>
+                <div class="api-status">
+                    <strong>🔍 Debug Mode:</strong> Network requests shown for each tab
+                    <div class="mt-2">
+                        <span class="badge bg-primary stats-badge">Total Cards Loading...</span>
+                        <span class="badge bg-success stats-badge" id="identical-count">Identical: ?</span>
+                        <span class="badge bg-warning stats-badge" id="different-count">Different: ?</span>
+                        <span class="badge bg-info stats-badge" id="unique1-count">{{ data.file1_name }}: ?</span>
+                        <span class="badge bg-info stats-badge" id="unique2-count">{{ data.file2_name }}: ?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Log Panel -->
+        <div id="debug-panel" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🌐 Network Activity Log</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="network-log" class="network-log">
+                            <div>🚀 Network logging active...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Status Debug -->
+        <div id="comparison-debug" class="debug-panel" style="display: none;">
+            <div><strong>📊 Comparison Status Debug:</strong></div>
+            <div id="comparison-status">Loading...</div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-3" id="main-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" 
+                        id="different-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#different-pane" 
+                        type="button" 
+                        role="tab"
+                        data-card-type="different">
+                    🔄 Different Cards (<span id="different-tab-count">?</span>)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="identical-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#identical-pane" 
+                        type="button" 
+                        role="tab"
+                        data-card-type="identical">
+                    ✅ Identical Cards (<span id="identical-tab-count">?</span>)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="unique1-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#unique1-pane" 
+                        type="button" 
+                        role="tab"
+                        data-card-type="unique1">
+                    📁 {{ data.file1_name }} Only (<span id="unique1-tab-count">?</span>)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        id="unique2-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#unique2-pane" 
+                        type="button" 
+                        role="tab"
+                        data-card-type="unique2">
+                    📁 {{ data.file2_name }} Only (<span id="unique2-tab-count">?</span>)
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="main-tab-content">
+            
+            <!-- Different Cards Tab -->
+            <div class="tab-pane fade show active" id="different-pane" role="tabpanel">
+                <h4>Cards with Different Answers</h4>
+                <p class="text-muted">Choose which version to keep for each card:</p>
+                <div id="different-cards-container" class="loading">
+                    🔄 Loading cards via API...
+                </div>
+            </div>
+
+            <!-- Identical Cards Tab -->
+            <div class="tab-pane fade" id="identical-pane" role="tabpanel">
+                <h4>Identical Cards</h4>
+                <p class="text-muted">These cards are the same in both files:</p>
+                <div id="identical-cards-container" class="loading">
+                    🔄 Click tab to load cards via API...
+                </div>
+            </div>
+
+            <!-- Unique File 1 Tab -->
+            <div class="tab-pane fade" id="unique1-pane" role="tabpanel">
+                <h4>Cards Only in {{ data.file1_name }}</h4>
+                <p class="text-muted">Select which cards to include:</p>
+                <div id="unique1-cards-container" class="loading">
+                    🔄 Click tab to load cards via API...
+                </div>
+            </div>
+
+            <!-- Unique File 2 Tab -->
+            <div class="tab-pane fade" id="unique2-pane" role="tabpanel">
+                <h4>Cards Only in {{ data.file2_name }}</h4>
+                <p class="text-muted">Select which cards to include:</p>
+                <div id="unique2-cards-container" class="loading">
+                    🔄 Click tab to load cards via API...
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex gap-2">
+                    <button id="save-selections" class="btn btn-primary">💾 Save Selections</button>
+                    <button id="generate-export" class="btn btn-success">📥 Generate Export</button>
+                    <button id="reset-selections" class="btn btn-outline-warning">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =============================================================================
+        // API-DRIVEN ANKI DIFF UI WITH EXTENSIVE DEBUGGING
+        // =============================================================================
+        
+        class NetworkLogger {
+            constructor() {
+                this.logs = [];
+                this.logElement = document.getElementById('network-log');
+            }
+            
+            log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = `[${timestamp}] ${message}`;
+                
+                this.logs.push(entry);
+                
+                if (this.logElement) {
+                    const logDiv = document.createElement('div');
+                    logDiv.textContent = entry;
+                    logDiv.className = `log-${type}`;
+                    this.logElement.appendChild(logDiv);
+                    this.logElement.scrollTop = this.logElement.scrollHeight;
+                }
+                
+                console.log(`%c${entry}`, this.getConsoleStyle(type));
+            }
+            
+            getConsoleStyle(type) {
+                const styles = {
+                    error: 'color: #ff4444; font-weight: bold;',
+                    warn: 'color: #ffaa00;',
+                    info: 'color: #00aa00;',
+                    success: 'color: #00ff00; font-weight: bold;'
+                };
+                return styles[type] || styles.info;
+            }
+            
+            clear() {
+                this.logs = [];
+                if (this.logElement) {
+                    this.logElement.innerHTML = '<div>🚀 Network logging active...</div>';
+                }
+            }
+        }
+        
+        class ApiAnkiDiffUI {
+            constructor() {
+                this.logger = new NetworkLogger();
+                this.currentTab = 'different';
+                this.loadedTabs = new Set();
+                this.cardData = {};
+                this.debugMode = false;
+                
+                this.logger.log('🚀 API-driven Anki Diff UI initializing...', 'info');
+            }
+            
+            async init() {
+                try {
+                    this.logger.log('Initializing UI components...', 'info');
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    // Load initial status
+                    await this.loadComparisonStatus();
+                    
+                    // Load first tab
+                    await this.loadTabContent('different');
+                    this.loadedTabs.add('different');
+                    
+                    this.logger.log('✅ UI initialization complete!', 'success');
+                    
+                } catch (error) {
+                    this.logger.log(`❌ Failed to initialize UI: ${error.message}`, 'error');
+                    throw error;
+                }
+            }
+            
+            setupEventListeners() {
+                this.logger.log('Setting up event listeners...', 'info');
+                
+                // Debug controls
+                document.getElementById('toggle-debug')?.addEventListener('click', () => this.toggleDebugMode());
+                document.getElementById('refresh-status')?.addEventListener('click', () => this.loadComparisonStatus());
+                document.getElementById('clear-logs')?.addEventListener('click', () => this.logger.clear());
+                
+                // Tab switching
+                document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                    tab.addEventListener('shown.bs.tab', async (event) => {
+                        const cardType = event.target.getAttribute('data-card-type');
+                        this.currentTab = cardType;
+                        
+                        if (!this.loadedTabs.has(cardType)) {
+                            await this.loadTabContent(cardType);
+                            this.loadedTabs.add(cardType);
+                        }
+                    });
+                });
+                
+                // Action buttons
+                document.getElementById('save-selections')?.addEventListener('click', () => this.saveSelections());
+                document.getElementById('generate-export')?.addEventListener('click', () => this.generateExport());
+                document.getElementById('reset-selections')?.addEventListener('click', () => this.resetSelections());
+                
+                this.logger.log('✅ Event listeners setup complete', 'success');
+            }
+            
+            async loadComparisonStatus() {
+                this.logger.log('🔄 Loading comparison status...', 'info');
+                
+                try {
+                    const response = await fetch('/api/comparison-status');
+                    const data = await response.json();
+                    
+                    this.logger.log(`📡 GET /api/comparison-status - Status: ${response.status}`, 'info');
+                    this.logger.log(`📊 Response: ${JSON.stringify(data, null, 2)}`, 'info');
+                    
+                    if (data.success) {
+                        this.updateStatusDisplay(data);
+                        this.logger.log('✅ Comparison status loaded successfully', 'success');
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                    
+                } catch (error) {
+                    this.logger.log(`❌ Failed to load comparison status: ${error.message}`, 'error');
+                    this.showError('Failed to load comparison status');
+                }
+            }
+            
+            async loadTabContent(cardType) {
+                this.logger.log(`🔄 Loading ${cardType} cards...`, 'info');
+                
+                const container = document.getElementById(`${cardType}-cards-container`);
+                if (!container) {
+                    this.logger.log(`❌ Container not found: ${cardType}-cards-container`, 'error');
+                    return;
+                }
+                
+                // Show loading state
+                container.innerHTML = '<div class="loading">🔄 Loading cards via API...</div>';
+                
+                try {
+                    const response = await fetch(`/api/cards/${cardType}`);
+                    const data = await response.json();
+                    
+                    this.logger.log(`📡 GET /api/cards/${cardType} - Status: ${response.status}`, 'info');
+                    this.logger.log(`📊 Response summary: ${data.count} cards, debug: ${JSON.stringify(data.debug_info)}`, 'info');
+                    
+                    if (data.success) {
+                        this.cardData[cardType] = data.cards;
+                        this.renderCards(cardType, data.cards, data.debug_info);
+                        this.updateTabCount(cardType, data.count);
+                        this.logger.log(`✅ Loaded ${data.count} ${cardType} cards`, 'success');
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                    
+                } catch (error) {
+                    this.logger.log(`❌ Failed to load ${cardType} cards: ${error.message}`, 'error');
+                    container.innerHTML = `<div class="error">❌ Failed to load cards: ${error.message}</div>`;
+                }
+            }
+            
+            renderCards(cardType, cards, debugInfo) {
+                const container = document.getElementById(`${cardType}-cards-container`);
+                
+                if (cards.length === 0) {
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            📭 No ${cardType} cards found.
+                            <div class="mt-2 small">
+                                Debug: Loaded ${cards.length} cards from ${debugInfo.data_key}
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                
+                if (cardType === 'different') {
+                    html = this.renderDifferentCards(cards, debugInfo);
+                } else if (cardType === 'identical') {
+                    html = this.renderIdenticalCards(cards, debugInfo);
+                } else if (cardType === 'unique1' || cardType === 'unique2') {
+                    html = this.renderUniqueCards(cards, debugInfo, cardType);
+                }
+                
+                // Add debug info if in debug mode
+                if (this.debugMode) {
+                    html = `
+                        <div class="debug-panel">
+                            <strong>🔍 Debug Info:</strong><br>
+                            Card Type: ${debugInfo.card_type}<br>
+                            Data Key: ${debugInfo.data_key}<br>
+                            Total Cards: ${debugInfo.total_cards}<br>
+                            File1: ${debugInfo.file1_name}<br>
+                            File2: ${debugInfo.file2_name}<br>
+                            Timestamp: ${new Date(debugInfo.timestamp * 1000).toLocaleString()}
+                        </div>
+                        ${html}
+                    `;
+                }
+                
+                container.innerHTML = html;
+                
+                // Setup card interactions
+                this.setupCardInteractions(cardType);
+            }
+            
+            renderDifferentCards(cards, debugInfo) {
+                return cards.map((card, index) => `
+                    <div class="anki-card" data-card-index="${index}" data-card-type="different">
+                        <div class="anki-question">${this.escapeHtml(card.question)}</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>${debugInfo.file1_name}</h6>
+                                <div class="anki-answer">${this.escapeHtml(card.file1_answer)}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>${debugInfo.file2_name}</h6>
+                                <div class="anki-answer">${this.escapeHtml(card.file2_answer)}</div>
+                            </div>
+                        </div>
+                        <div class="card-controls mt-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" 
+                                       name="different-${index}" 
+                                       id="diff-file1-${index}" 
+                                       value="file1" 
+                                       ${card.selected === 'file1' ? 'checked' : ''}>
+                                <label class="form-check-label" for="diff-file1-${index}">
+                                    Use ${debugInfo.file1_name}
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" 
+                                       name="different-${index}" 
+                                       id="diff-file2-${index}" 
+                                       value="file2" 
+                                       ${card.selected === 'file2' ? 'checked' : ''}>
+                                <label class="form-check-label" for="diff-file2-${index}">
+                                    Use ${debugInfo.file2_name}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            renderIdenticalCards(cards, debugInfo) {
+                return cards.map((card, index) => `
+                    <div class="anki-card" data-card-index="${index}" data-card-type="identical">
+                        <div class="anki-question">${this.escapeHtml(card.question)}</div>
+                        <div class="anki-answer">${this.escapeHtml(card.answer)}</div>
+                    </div>
+                `).join('');
+            }
+            
+            renderUniqueCards(cards, debugInfo, cardType) {
+                const fileName = cardType === 'unique1' ? debugInfo.file1_name : debugInfo.file2_name;
+                
+                const selectAllHtml = `
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="select-all-${cardType}" checked>
+                            <label class="form-check-label" for="select-all-${cardType}">
+                                Select All Cards from ${fileName}
+                            </label>
+                        </div>
+                    </div>
+                `;
+                
+                const cardsHtml = cards.map((card, index) => `
+                    <div class="anki-card" data-card-index="${index}" data-card-type="${cardType}">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input ${cardType}-checkbox" type="checkbox" 
+                                   id="${cardType}-${index}" 
+                                   data-card-index="${index}"
+                                   ${card.selected ? 'checked' : ''}>
+                            <label class="form-check-label" for="${cardType}-${index}">
+                                Include this card
+                            </label>
+                        </div>
+                        <div class="anki-question">${this.escapeHtml(card.question)}</div>
+                        <div class="anki-answer">${this.escapeHtml(card.answer)}</div>
+                    </div>
+                `).join('');
+                
+                return selectAllHtml + cardsHtml;
+            }
+            
+            setupCardInteractions(cardType) {
+                // Setup radio buttons for different cards
+                if (cardType === 'different') {
+                    document.querySelectorAll(`input[type="radio"][name^="different-"]`).forEach(radio => {
+                        radio.addEventListener('change', (event) => {
+                            const cardIndex = event.target.name.split('-')[1];
+                            const selection = event.target.value;
+                            this.updateCardSelection(cardType, cardIndex, selection);
+                        });
+                    });
+                }
+                
+                // Setup checkboxes for unique cards
+                if (cardType === 'unique1' || cardType === 'unique2') {
+                    // Individual checkboxes
+                    document.querySelectorAll(`.${cardType}-checkbox`).forEach(checkbox => {
+                        checkbox.addEventListener('change', (event) => {
+                            const cardIndex = event.target.getAttribute('data-card-index');
+                            this.updateCardSelection(cardType, cardIndex, event.target.checked);
+                        });
+                    });
+                    
+                    // Select all toggle
+                    const selectAll = document.getElementById(`select-all-${cardType}`);
+                    if (selectAll) {
+                        selectAll.addEventListener('change', (event) => {
+                            this.toggleAllCards(cardType, event.target.checked);
+                        });
+                    }
+                }
+            }
+            
+            updateCardSelection(cardType, cardIndex, value) {
+                this.logger.log(`🎯 Card selection: ${cardType}[${cardIndex}] = ${value}`, 'info');
+                
+                if (this.cardData[cardType] && this.cardData[cardType][cardIndex]) {
+                    if (cardType === 'different') {
+                        this.cardData[cardType][cardIndex].selected = value;
+                    } else {
+                        this.cardData[cardType][cardIndex].selected = value;
+                    }
+                }
+            }
+            
+            toggleAllCards(cardType, selected) {
+                this.logger.log(`🎯 Toggle all ${cardType} cards: ${selected}`, 'info');
+                
+                const checkboxes = document.querySelectorAll(`.${cardType}-checkbox`);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selected;
+                    const cardIndex = checkbox.getAttribute('data-card-index');
+                    this.updateCardSelection(cardType, cardIndex, selected);
+                });
+            }
+            
+            updateStatusDisplay(data) {
+                // Update counts in header
+                document.getElementById('identical-count').textContent = `Identical: ${data.card_counts.identical_cards}`;
+                document.getElementById('different-count').textContent = `Different: ${data.card_counts.different_cards}`;
+                document.getElementById('unique1-count').textContent = `${data.file_info.file1_name}: ${data.card_counts.unique_file1}`;
+                document.getElementById('unique2-count').textContent = `${data.file_info.file2_name}: ${data.card_counts.unique_file2}`;
+                
+                // Update debug panel
+                if (this.debugMode) {
+                    document.getElementById('comparison-status').innerHTML = `
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            }
+            
+            updateTabCount(cardType, count) {
+                const countElement = document.getElementById(`${cardType}-tab-count`);
+                if (countElement) {
+                    countElement.textContent = count;
+                }
+            }
+            
+            toggleDebugMode() {
+                this.debugMode = !this.debugMode;
+                const debugPanel = document.getElementById('debug-panel');
+                const comparisonDebug = document.getElementById('comparison-debug');
+                
+                if (debugPanel) {
+                    debugPanel.style.display = this.debugMode ? 'block' : 'none';
+                }
+                if (comparisonDebug) {
+                    comparisonDebug.style.display = this.debugMode ? 'block' : 'none';
+                }
+                
+                this.logger.log(`🐛 Debug mode ${this.debugMode ? 'enabled' : 'disabled'}`, 'info');
+                
+                if (this.debugMode) {
+                    this.loadComparisonStatus();
+                }
+            }
+            
+            escapeHtml(unsafe) {
+                return unsafe
+                     .replace(/&/g, "&amp;")
+                     .replace(/</g, "&lt;")
+                     .replace(/>/g, "&gt;")
+                     .replace(/"/g, "&quot;")
+                     .replace(/'/g, "&#039;");
+            }
+            
+            showError(message) {
+                console.error(message);
+                // Could show a toast or alert here
+            }
+            
+            async saveSelections() {
+                this.logger.log('💾 Saving selections...', 'info');
+                // Implementation for saving
+            }
+            
+            async generateExport() {
+                this.logger.log('📥 Generating export...', 'info');
+                window.location.href = '/generate_export';
+            }
+            
+            resetSelections() {
+                if (confirm('Reset all selections?')) {
+                    window.location.href = '/reset';
+                }
+            }
+        }
+        
+        // Initialize the UI
+        let ankiUI;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                ankiUI = new ApiAnkiDiffUI();
+                await ankiUI.init();
+                
+                // Make available globally for debugging
+                window.ankiUI = ankiUI;
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize API Anki Diff UI:', error);
+                alert('Failed to initialize the application. Check the console for details.');
+            }
+        });
+        
+        console.log('🚀 API-driven Anki Diff UI loaded!');
+        
+    </script>
+</body>
+</html>

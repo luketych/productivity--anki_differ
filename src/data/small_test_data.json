@@ -1,0 +1,98 @@
+{
+  "headers": {
+    "separator": "tab",
+    "html": "true"
+  },
+  "file1_name": "Test File 1",
+  "file2_name": "Test File 2",
+  "file1_path": "/tmp/test1.txt",
+  "file2_path": "/tmp/test2.txt",
+  "identical_cards": [
+    {
+      "question": "What is 2 + 2?",
+      "answer": "4",
+      "selected": "file1"
+    },
+    {
+      "question": "What is the capital of France?",
+      "answer": "Paris",
+      "selected": "file1"
+    },
+    {
+      "question": "What color is the sky?",
+      "answer": "Blue",
+      "selected": "file1"
+    }
+  ],
+  "different_cards": [
+    {
+      "question": "What is the best programming language?",
+      "file1_answer": "Python",
+      "file2_answer": "JavaScript",
+      "selected": "file1"
+    },
+    {
+      "question": "What is the meaning of life?",
+      "file1_answer": "42",
+      "file2_answer": "To be happy",
+      "selected": "file1"
+    }
+  ],
+  "unique_file1": [
+    {
+      "question": "Python-specific question 1?",
+      "answer": "Python answer 1",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 2?",
+      "answer": "Python answer 2",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 3?",
+      "answer": "Python answer 3",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 4?",
+      "answer": "Python answer 4",
+      "selected": true
+    }
+  ],
+  "unique_file2": [
+    {
+      "question": "JavaScript-specific question 1?",
+      "answer": "JavaScript answer 1",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 2?",
+      "answer": "JavaScript answer 2",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 3?",
+      "answer": "JavaScript answer 3",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 4?",
+      "answer": "JavaScript answer 4",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 5?",
+      "answer": "JavaScript answer 5",
+      "selected": true
+    }
+  ],
+  "stats": {
+    "file1_total": 9,
+    "file2_total": 10,
+    "identical": 3,
+    "different": 2,
+    "only_file1": 4,
+    "only_file2": 5
+  }
+}

@@ -1,0 +1,363 @@
+{
+  "headers": {
+    "separator": "tab",
+    "html": "true"
+  },
+  "file1_name": "Test File 1",
+  "file2_name": "Test File 2",
+  "file1_path": "/tmp/test1.txt",
+  "file2_path": "/tmp/test2.txt",
+  "identical_cards": [
+    {
+      "question": "What is 2 + 2?",
+      "answer": "4",
+      "selected": "file1"
+    },
+    {
+      "question": "What is the capital of France?",
+      "answer": "Paris",
+      "selected": "file1"
+    },
+    {
+      "question": "What color is the sky?",
+      "answer": "Blue",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 4?",
+      "answer": "Bulk identical answer 4",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 5?",
+      "answer": "Bulk identical answer 5",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 6?",
+      "answer": "Bulk identical answer 6",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 7?",
+      "answer": "Bulk identical answer 7",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 8?",
+      "answer": "Bulk identical answer 8",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 9?",
+      "answer": "Bulk identical answer 9",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 10?",
+      "answer": "Bulk identical answer 10",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 11?",
+      "answer": "Bulk identical answer 11",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 12?",
+      "answer": "Bulk identical answer 12",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 13?",
+      "answer": "Bulk identical answer 13",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 14?",
+      "answer": "Bulk identical answer 14",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 15?",
+      "answer": "Bulk identical answer 15",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 16?",
+      "answer": "Bulk identical answer 16",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 17?",
+      "answer": "Bulk identical answer 17",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 18?",
+      "answer": "Bulk identical answer 18",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 19?",
+      "answer": "Bulk identical answer 19",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 20?",
+      "answer": "Bulk identical answer 20",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 21?",
+      "answer": "Bulk identical answer 21",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 22?",
+      "answer": "Bulk identical answer 22",
+      "selected": "file1"
+    },
+    {
+      "question": "Bulk identical question 23?",
+      "answer": "Bulk identical answer 23",
+      "selected": "file1"
+    }
+  ],
+  "different_cards": [
+    {
+      "question": "What is the best programming language?",
+      "file1_answer": "Python",
+      "file2_answer": "JavaScript",
+      "selected": "file1"
+    },
+    {
+      "question": "What is the meaning of life?",
+      "file1_answer": "42",
+      "file2_answer": "To be happy",
+      "selected": "file1"
+    }
+  ],
+  "unique_file1": [
+    {
+      "question": "Python-specific question 1?",
+      "answer": "Python answer 1",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 2?",
+      "answer": "Python answer 2",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 3?",
+      "answer": "Python answer 3",
+      "selected": true
+    },
+    {
+      "question": "Python-specific question 4?",
+      "answer": "Python answer 4",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 5?",
+      "answer": "Bulk unique1 answer 5",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 6?",
+      "answer": "Bulk unique1 answer 6",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 7?",
+      "answer": "Bulk unique1 answer 7",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 8?",
+      "answer": "Bulk unique1 answer 8",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 9?",
+      "answer": "Bulk unique1 answer 9",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 10?",
+      "answer": "Bulk unique1 answer 10",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 11?",
+      "answer": "Bulk unique1 answer 11",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 12?",
+      "answer": "Bulk unique1 answer 12",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 13?",
+      "answer": "Bulk unique1 answer 13",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 14?",
+      "answer": "Bulk unique1 answer 14",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 15?",
+      "answer": "Bulk unique1 answer 15",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 16?",
+      "answer": "Bulk unique1 answer 16",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 17?",
+      "answer": "Bulk unique1 answer 17",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 18?",
+      "answer": "Bulk unique1 answer 18",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique1 question 19?",
+      "answer": "Bulk unique1 answer 19",
+      "selected": true
+    }
+  ],
+  "unique_file2": [
+    {
+      "question": "JavaScript-specific question 1?",
+      "answer": "JavaScript answer 1",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 2?",
+      "answer": "JavaScript answer 2",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 3?",
+      "answer": "JavaScript answer 3",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 4?",
+      "answer": "JavaScript answer 4",
+      "selected": true
+    },
+    {
+      "question": "JavaScript-specific question 5?",
+      "answer": "JavaScript answer 5",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 6?",
+      "answer": "Bulk unique2 answer 6",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 7?",
+      "answer": "Bulk unique2 answer 7",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 8?",
+      "answer": "Bulk unique2 answer 8",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 9?",
+      "answer": "Bulk unique2 answer 9",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 10?",
+      "answer": "Bulk unique2 answer 10",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 11?",
+      "answer": "Bulk unique2 answer 11",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 12?",
+      "answer": "Bulk unique2 answer 12",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 13?",
+      "answer": "Bulk unique2 answer 13",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 14?",
+      "answer": "Bulk unique2 answer 14",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 15?",
+      "answer": "Bulk unique2 answer 15",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 16?",
+      "answer": "Bulk unique2 answer 16",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 17?",
+      "answer": "Bulk unique2 answer 17",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 18?",
+      "answer": "Bulk unique2 answer 18",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 19?",
+      "answer": "Bulk unique2 answer 19",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 20?",
+      "answer": "Bulk unique2 answer 20",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 21?",
+      "answer": "Bulk unique2 answer 21",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 22?",
+      "answer": "Bulk unique2 answer 22",
+      "selected": true
+    },
+    {
+      "question": "Bulk unique2 question 23?",
+      "answer": "Bulk unique2 answer 23",
+      "selected": true
+    }
+  ],
+  "stats": {
+    "file1_total": 44,
+    "file2_total": 48,
+    "identical": 23,
+    "different": 2,
+    "only_file1": 19,
+    "only_file2": 23
+  }
+}

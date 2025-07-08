@@ -1,0 +1,462 @@
+Anki Export Comparison Report
+===========================
+
+File 1: anki-export-android.txt
+File 2: anki-export-macos.txt
+
+Summary:
+  Total cards in File 1: 2172
+  Total cards in File 2: 2164
+  Cards only in File 1: 75
+  Cards only in File 2: 67
+  Shared cards with differences: 4
+
+Cards in File 2 but missing in File 1:
+  1. Q: [tech]<br>[vscode]<br><br>launch vs attach?
+     A: Launch is a recipe for starting your app in debug mode before VSCode attaches to it. This is more familiar from the perspective of server and backend development. VSCode launches and sets up the processes for you.<br><br>Attach is a recipe for how to connect VS Code's debugger to an app or process that's already running. This is more familiar from the perspective of frontend development, for example attaching VSCode's debugger to a browser that is already running.
+
+  2. Q: "[tech]<br>[vscode]<br><br>I was having an issue in vscode where my python code was running through the command line but when I ran it directly:<br><br>```<br>/usr/bin/env /Users/luketych/Dev/_P<br>rojects/_ktr/_srt/poetry/ibReader/.venv/bin/python /Users/luketych/.vscode/exte<br>nsions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../d<br>ebugpy/launcher 51366 -- -m poetry run python src_test/__init__.py <br>E+00016.116: Failed to kill Debuggee[PID=8101]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Traceback (most recent call last):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/launcher/debuggee.py"", line 190, in kill<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.killpg(process.pid, signal.SIGKILL)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PermissionError: [Errno 1] Operation not permitted<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stack where logged:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/launcher/debuggee.py"", line 192, in kill<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.swallow_exception(""Failed to kill {0}"", describe())<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/common/log.py"", line 215, in swallow_exception<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _exception(format_string, *args, **kwargs)<br>```<br><br>This is a problem with the debugger. <br><br>1. What did I do to debug this?<br>2. How did I solve it?"
+     A: 1. I copied the code that vscode was running:<br>```<br>cd /Users/luketych/Dev/_Projects/_k<br>tr/_srt/poetry/ibReader ; /usr/bin/env /Users/luketych/Dev/_Projects/_ktr/_srt/<br>poetry/ibReader/.venv/bin/python /Users/luketych/.vscode/extensions/ms-python.p<br>ython-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 51<br>780 -- -m poetry run -vvv python -m src<br>```<br>, pasted it into the terminal and ran it to see what error I would get.<br><br>2. I updated the vscode python extension. I downgraded it earlier to try to fix another bug.<br><br>Lesson: when changing infrastructure or my tools make sure they run the same before I stop working. <br>@think: Take brief notes on the changes I make and log them into github?
+
+  3. Q: What does `cross-env NODE_ENV=custom-env-vars mocha test/ --recursive --exit` do?
+     A: It uses cross-env, which sets the environment variables, which gets them from custom-env-vars.env, and then uses mocha to look inside the test/ folder, using the recursive option to look for test files in the subdirectories of test/. Finally it exits the process once finished.
+
+  4. Q: move to first non-blank character of line
+     A: ^
+
+  5. Q: [tech] [vscode]<br><br>list and select a file
+     A: Ctrl+tab
+
+  6. Q: [tech]<br>[vscode]<br><br>alternative to enter
+     A: Ctrl+m
+
+  7. Q: Cut the 5th line above the cursor
+     A: :-5d
+
+  8. Q: [tech]<br>[vscode]<br><br>explorer open and close folder
+     A: o
+
+  9. Q: [tech]<br>[vscode]<br><br>What to do if nodemon keeps saying the port is already in use when I save and it restarts my server?
+     A: CMD-Q to quit VSCode, and then restart.<br><br>Check out my @ktr-srt/packages/api code since I am using some scripts in my package.json file to help with that.<br><br>check out ktr.bio/nodemon
+
+  10. Q: [tech]<br>[vscode]<br><br>collapse all folders
+     A: CMD+0 (to switch to explorer)<br>CMD+left (to collapse all folders)
+
+  11. Q: Why might oncreate() not be firing?
+     A: Server Side Rendering
+
+  12. Q: [tech]<br>[vscode]<br><br>swap back n forth between two tabs
+     A: CTRL+tab
+
+  13. Q: [tech]<br>[vscode]<br><br>close all tabs
+     A: Command + Alt + T
+
+  14. Q: How do you access the postgres db?<br><br>For example, in my postgres container.
+     A: <ol><li><pre><div><div><code>su - postgres</code></div></div></pre></li><li><div><code>psql</code></div></li></ol><br><br>Or psql -U postgres<br>
+
+  15. Q: [tech]<br>[talon]<br><br>Start vscode, or switch to it if it's already running
+     A: Focus vscode<br>Launch vscode
+
+  16. Q: [tech]<br>[vscode]<br><br>Open two files side-by-side.
+     A: Cmd+\
+
+  17. Q: [tech]<br>[vscode]<br><br>swap two lines that are next to each other
+     A: Hold option and press up or down
+
+  18. Q: "[tech]<br>[python]<br><br><img src=""Screenshot 2023-11-30 at 7.21.49 PM.png""><br><br>Is it good to have an __init__.py file for each utility directory?"
+     A: "<img src=""Screenshot 2023-11-30 at 7.21.54 PM.png""><br><br>The value of doing so allows you to import it like so:<br>from util.dirName import subFunction.<br><br>The cost of doing so is when you want to move the files around, you will have to change a lot of things. VSCode will automatically update references to the file path, but if I drag util/myFile.py into util/myDir then I will also have to edit util/myDir/__init__.py. This makes it heavy and difficult to play around with the folder and file structure.<br><br>If we leave everything in util/__init__.py and don't have __init__ files inside each subDir then it will be much more lightweight. And we can still import things like `from util import anything.py`<br><br>This makes a lot more sense"
+
+  19. Q: [tech]<br>[vscode]<br><br>What to do in VSCode if the file explorer keeps scrolling automatically?
+     A: "Search in settings for&nbsp;<span style=""white-space: pre-wrap;"">explorer.autoReveal and set to False.</span>"
+
+  20. Q: "[tech]<br>[python]<br><br>What do I do if I try to run python tests in vscode and see the following:<br><br><img src=""Screenshot 2023-12-06 at 4.43.53 PM.png"">"
+     A: "<span style=""color: rgb(12, 13, 14); background-color: rgb(227, 230, 232);"">pytest --collect-only<br></span><br>Run this command to see if there are any errors."
+
+  21. Q: [tech]<br>[python]<br><br>Differences between pytest and unittest.
+     A: "Pytest has simpler, more powerful discovery:<br><br>`pytest .` will automatically search all subdirs for ""test_*.py"" files.<br><br>unittest requires something like `python -m unittest discover -s ""."" -p ""test_*.py""`<br>and it doesn't recurse, and you can only add one directory with the -s command.<br><br>Also, you have to name the test folder something like test_mypackage. If you don't and you are testing multiple packages all with their test folders named ""test"" then in the TEST panel in vscode is will just show test, test, test, etc.<br>It won't tell you which is which."
+
+  22. Q: [tech]<br>[vscode]<br><br>jsconfig.json files
+     A: You can only have one that is used per project.<br><br>You can have more than one in a monorepo but I think from the current file VSCode will look up the directory tree and laod the first one it finds. So if I have one in the main monorepo folder, and none in the packages/util folder then it will use that one. But if I also have one inside of packages/util then it will use that one.
+
+  23. Q: [tech]<br>[vscode]<br><br>How to run a node script from the terminal and then attach the vscode debugger to it?
+     A: "1. Run the script in the terminal with the --inspect-brk option,<br><br>ie `yarn workspace @ktr-logging/index run test_logging --inspect-brk`<br><br>This will pause the debugger and wait for it to attach itself.<br><br>2. Then in launch.json file add a configuration like so:<br>&nbsp; &nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""type"": ""node"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""request"": ""attach"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""name"": ""Attach to Node"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""port"": 9229<br>&nbsp;&nbsp;&nbsp; }"
+
+  24. Q: When running `npm install &lt;pkg&gt; --global`, how do I know to which directory it is being installed to on my machine?
+     A: npm root -g
+
+  25. Q: [tech]<br>[vscode]<br><br>What to do if these aren't loading?<br><br>from namespace.configuration import find_config<br>from namespace.dataManager import getInputDataDir<br>from namespace.util import getAbsPath
+     A: Restart VSCode
+
+  26. Q: Peroneus longus, brevis actions?
+     A: Eversion, plantar-flexion
+
+  27. Q: [anatomy]<br><br>Muscles that are all close to the medial foot arch<br><br>Hint: 6 of them 
+     A: Abductor Hallucis<br>Flexor Digitorum Longus<br>Flexor Hallucis Longus<br>Flexor Hallucis Brevis<br>Tibialis Posterior<br>Tibialis Anterior
+
+  28. Q: [tech]<br>[vscode]<br><br>keyboard focus on explorer (for interacting w/ files and folders)
+     A: Shift + CMD + E
+
+  29. Q: [tech]<br>[vscode] <br><br>keyboard:<br><br>focus on explorer and highlight current file that's open
+     A: Shift + CMD + E
+
+  30. Q: poetry: What kind of dependency version specifier is this? ^<strong><code>1.2.3<br></code></strong><br>What does it mean?
+     A: Caret specifier.<br><br>It means it is compatible with version 1.2.3 and any other backward-compatible versions up to, but not including, the next major release.<br><br>It is similar to ~= but a bit more flexible. It allows installing patch and minor releases that are backwar-compatible.<br><br><div><div><div><div><div><div><div><div><div><div><div><div><div><div><strong>Example</strong>: Let's say your project specifies a dependency with <code>^1.2.3</code>. Here's what it implies:</div><ul><li>You're okay with installing version 1.2.3 of the dependency.</li><li>You're also okay with installing any version within the same major release line (1.x.x) as long as it's backward-compatible with 1.2.3.</li><li>You won't automatically get version 2.0.0 or higher because those could potentially introduce breaking changes.</li></ul><div>For example, with <code>^1.2.3</code>, you might get versions like <code>1.2.4</code>, <code>1.3.0</code>, or <code>1.9.9</code>, but you won't get versions like <code>2.0.0</code> or <code>3.0.0</code> automatically. This provides a balance between stability and the availability of bug fixes and new features.</div></div></div></div><div><div><div></div><div></div></div></div><div></div></div><div><div></div></div></div></div></div></div></div></div></div></div></div><div><div><div></div><div><br></div></div></div>
+
+  31. Q: [tech]<br>[python]<br><br>When my python project is vscode is failing to link the namespace projects I set up, ie mylogging, utility, what do I need to do besides restarting vscode?
+     A: Select the correct python interpreter. This is likely the cause, and the reason why restarting vscode is becuase vscode will go through this step on setting up.
+
+  32. Q: [tech]<br>[python]<br><br>Why is it important to put the pydocs below the function declaration rather than above?
+     A: By putting it above, as in javascript, this is fighting against convention, which will cause vscode to not be able to pick up the information. So when I hover over the function name it will fail to show me the parameters, and description.
+
+  33. Q: "<div>[tech]<br>[python]<br></div><div><br></div><div>Compare the two in regards to setting breakpoints:<br></div><div><br></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;""><br></span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">class</span><span style=""color: #ffffff;""> </span><span style=""color: #4ec9b0;"">TestGlobFindFilesMatchingPattern</span><span style=""color: rgb(255, 255, 255);"">:</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #dcdcaa;"">&nbsp; &nbsp; @pytest.fixture</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">autouse</span><span style=""color: #d4d4d4;"">=</span><span style=""color: #569cd6;"">True</span><span style=""color: #ffffff;"">)</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #569cd6;"">&nbsp; &nbsp; def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">setup</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; &nbsp; &nbsp; self</span><span style=""color: #ffffff;"">.</span><span style=""color: #9cdcfe;"">test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> getTestDir()</span></span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #569cd6;"">&nbsp; &nbsp; def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">test_1</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; &nbsp; &nbsp; test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">.</span><span style=""color: #9cdcfe;"">test_dir</span></span></div><div><span style=""color: #9cdcfe;""><br></span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #f44747;"">----------------</span><span style=""color: rgb(255, 255, 255); background-color: rgb(34, 34, 34);"">VERSUS</span><span style=""color: #f44747;"">----------------</span><span style=""color: #d4d4d4;"">-</span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #dcdcaa;""><br></span></div><div><span style=""color: rgb(220, 220, 170); background-color: rgb(34, 34, 34);"">@pytest.fixture</span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">env_data</span><span style=""color: #ffffff;"">():    </span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; test_environment_data</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> {</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #ce9178;"">&nbsp; &nbsp; &nbsp; &nbsp; ""test_dir""</span><span style=""color: #ffffff;"">: getTestDir()</span></span></div><div><span style=""color: rgb(255, 255, 255); background-color: rgb(34, 34, 34);"">&nbsp; &nbsp; }</span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #c586c0;"">&nbsp; &nbsp; yield</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">test_environment_data</span></span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">test_1</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">env_data</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">env_data</span><span style=""color: #ffffff;"">[</span><span style=""color: #ce9178;"">""test_dir""</span><span style=""color: #ffffff;"">]</span></span></div>"
+     A: If I set a breakpoint inside of the setup (setup() vs env_data()) for some reason (at least in vscode) the breakpoint will only be caught in the second example.<br><br>Breakpoints set inside of the tests themselves are ok in both cases.
+
+  34. Q: [[think]] [[reflect]]<br><br>What position is worst for the spine when working?
+     A: Flexed/rounded because when the spine is extended then all vertebrae are locked and stable.<br><br>When rounded they are all unstable and can shift and rotate easily. So if you have bad habits and are twisting or leaning then it will lead to a lot of problems.<br><br>A flexed spine is good and natural for certain lifting, movements. But under a constant long duration of sitting with a flexed position we have to be aware of the strain being put on certain tissues.
+
+  35. Q: [tech]<br>[databases]<br><br>Better to use camelCase or underscore_case for column names in a database?
+     A: "CREATE TABLE ticklerFile (<br>&nbsp;&nbsp;&nbsp; id SERIAL PRIMARY KEY,<br>&nbsp;&nbsp;&nbsp; type TEXT,<br>&nbsp;&nbsp;&nbsp; parentKey TEXT,<br>&nbsp;&nbsp;&nbsp; parentOriginalName TEXT,<br>&nbsp;&nbsp;&nbsp; image_name TEXT,<br>&nbsp;&nbsp;&nbsp; snoozeToDate DATE,<br>&nbsp;&nbsp;&nbsp; snoozeToTime TIME,<br>&nbsp;&nbsp;&nbsp; autoSnoozeDays INTEGER,<br>&nbsp;&nbsp;&nbsp; image_hash TEXT UNIQUE,<br>&nbsp;&nbsp;&nbsp; image_data BYTEA<br>);<br><br>In VSCODE it looks like this:<br><br><img src=""Screenshot 2024-07-18 at 3.31.41 PM.png""><br><br>All of the capital letters are lost.<br><br><br>**** Another example, where when not sure what to do it is best to stick to convention because you don't know how things will be affected downstream."
+
+  36. Q: "[tech]<br>[bash]<br><br>Why doesn't this work?<br><br>find . | ./filter_out **/.vscode/** **/.venv/**<br><br>But this does?<br><br>find . | ./filter_out ""**/.vscode/**"" ""**/.venv/**"""
+     A: "When using quotes """" the arguments are passed directly into the function.<br><br>When not using quotes it is called ""globbing"" and the shell attempts to convert the glob in the shell before passing it on to the function."
+
+  37. Q: "[tech]<br>[python]<br><br>Difference between these 2?<br><br>python -u ""$(dirname ""$0"")/filter_for.py"" ""$@""<br><br>python ""$(dirname ""$0"")/filter_for.py"" ""$@"""
+     A: "<div>python -u: The -u option forces Python to run in unbuffered mode, meaning output is written directly to stdout as soon as it is available, without any delay from buffering.</div>
+
+  38. Q: [tech]<br>[vscode]<br><br>How to add a keyboard shortcut for any command?
+     A: "Find the command using Shift+CMD+P<br>Select the settings (gear icon),<br>then click on ""Keybinding"""
+
+  39. Q: Use lsof to return only the process id's that are using port 1234
+     A: lsof -ti :1234
+
+  40. Q: [tech]<br><br>Youtube: fast forward 10 seconds
+     A: l (lower-case L)
+
+  41. Q: [tech] [macos]<br><br>Finder:<br> How do I select an item in the Favorites sidebar using only the keyboard?
+     A: 1) Shift-CMD-G to open a Go To Folder window.<br><br>2) Type the name of the favorite I see in the sidebar and press enter.
+
+  42. Q: [tech] [macos]<br><br>Finder:<br> previous / next folder
+     A: CMD-[<br>CMD-]
+
+  43. Q: [tech]<br><br>Finder: start search
+     A: CMD-F
+
+  44. Q: underscore-separated words
+     A: snake<br><br>ie. snake this is a test<br>&gt; this_is_a_test
+
+  45. Q: All words capitalized
+     A: title<br>ie. title this is a test<br>This Is A Test
+
+  46. Q: "<img src=""paste-b6c572fc54c2b473d56d1eacab2316b893dd8aa1.jpg"">"
+     A: <b>left side:</b><br>sacrospinous ligament<br><br><b>right side: (from top to bottom)</b><br>posterior sacroiliac ligament<br>sacrospinous ligament<br>sacrotuberous ligament
+
+  47. Q: [tech]<br>[git]<br><br>how do I see the changes between your local branch and the remote branch?
+     A: git diff origin/main
+
+  48. Q: [tech]<br>[vscode]<br><br>Hide/Show Bottom Panel (Problems, Output, Debug Console, Terminal, etc)
+     A: CMD + J
+
+  49. Q: [tech]<br>[vscode]<br><br>Back n forth between surrounding [ &amp; ], { &amp; }, ( &amp; ), etc
+     A: CMD + Shift + \
+
+  50. Q: [tech]<br>[vscode]<br><br>How do you see a list of all vscode commands?
+     A: "Shift + Cmd + P<br><br>then&nbsp;<span style=""color: rgb(240, 246, 252); background-color: rgb(34, 34, 34);"">Preferences: Open Default Keyboard Shortcuts (JSON)</span>"
+
+  51. Q: [tech]<br>[vscode]<br><br>What option for Alt+B, Alt+F so it stops producing characters like&nbsp;∫ƒ?<br><br>1. What is the name of the specific setting?<br>2. What is the namespace for this setting?
+     A: set to True: <br>macOptionIsMeta<br><br>Namespace: <br>terminal.integrated<br><br>full setting key: terminal.integrated.macOptionIsMeta
+
+  52. Q: How to make a script from the command line without entering vim or any other tool?
+     A: "1. cat &gt; my_file.sh &lt;&lt; EOL<br><br>2. Then I can type my script line-by-line<br><br>3. To finish, type ""EOL"", and return."
+
+  53. Q: [tech]<br><br>brave: <br>Recover previous tab
+     A: Cmd+Shift+T
+
+  54. Q: [tech]<br>[vscode]<br><br>Reopen last closed editor
+     A: Cmd+Shift+T
+
+  55. Q: "[tech]<br>[bash]<br><br>When debugging a shell script in vscode/cursor, the watch statement for debug_result is 'declare -- debug_result=""5""'<br><br>What if I want it to simply be '5'?"
+     A: Watch ${debug_result} instead of debug_result
+
+  56. Q: Types of programming errors.<br><br>Think Cells
+     A: "<img src=""cells-programming-errors-33ce76b0203860e909a13b747880fb781fc7ba61.jpg"">"
+
+  57. Q: [tech]<br><br>What kind of Unaccounted / Accounting Errors might you encounter?
+     A: Configuration Drift<br>Data Packet Loss<br>Misconfiguration<br>Misalignment<br>Resource Not Found<br>State Management Errors<br>Type Errors<br><br>CD MM RST<br><br>CDs Makes the Most Retarded Sense Today
+
+  58. Q: What is an Integration Error?
+     A: "<div><b>Integration Error</b></div>
+
+  59. Q: [tech] [bash]<br><br>The pid is 1169 and I want to now find out where the process is coming from. <br><br>What folder on my machine is it from?
+     A: "<div style=""background:#f99;""><br><span>pwdx 1169</span><br><br><span><b>pwdx</b> means print working directory of a process.</span><br></div><br><br><div style=""background:#99f;""><br><span>ps -p -f 1169</span><br><pre><br>-p stands for process id<br>-f stands for full format <br></pre><br></div><br>"
+
+  60. Q: [tech]<br>[bash]<br><br>When writing a custom script using eza, fzf, htop why might the formatting be being messed up?<br><br>For example, I was using eza and when I run it in the terminal alone it prints icons and a nice grid layout. When I combined it with other commands in a custom script it was losing all formats.<br><br>Besides the quirks within vscode, what else might be happening?
+     A: &nbsp; &nbsp; Programs like eza, ls, fzf, htop, etc. check if stdout is a real terminal<br>&nbsp; &nbsp; Without a real TTY, they disable formatting, color, layout, etc.
+
+  61. Q: [tech]<br>[vscode]<br><br>Say I have a .vscode/tasks.json file but no .vscode/launch.json flle.<br><br>How do I run it?
+     A: Shift+CMD+B
+
+  62. Q: [tech]<br>[vscode] [devcontainers]<br><br>In a VSCode Dev Container, how can you avoid permission issues with node_modules without needing a chown in postCreateCommand?
+     A: "Avoid the permission issue by ensuring that the container always uses the correct user (like node) from the start.<br><br>How to fix it properly:<br><br>1. In your Dockerfile, set the final USER to node:<br><br>USER node<br><br>2. In your devcontainer.json, ensure the container runs as the same user:<br><br>""remoteUser"": ""node""<br><br>3. Also, avoid creating node_modules or running npm install as root during image build.<br><br>---<br><br>By aligning the build-time and runtime user, node_modules is always owned by the correct user (node), so no sudo chown is needed in postCreateCommand."
+
+  63. Q: [vim]<br><br>What does this do?<br><br>:.,$s/old/new/g
+     A: "Replaces old with new from the current line until the end of the file.<br><br><br>In Vim, the comma in :.,$s/old/new/g separates the range of lines on which the substitution command should act.<br><br>Here's a breakdown:<br><br>. → the current line.<br><br>$ → the last line of the file.<br><br>.,$ → means ""from the current line to the end of the file"".<br><br><br>So:<br><br>:.,$s/old/new/g<br><br>says: ""Substitute 'old' with 'new' on every line from the current line (.) through the last line ($), globally on each line (g).""<br><br>The comma is the range separator between the starting and ending lines. "
+
+  64. Q: "[tech]<br>[vscode]<br><br><img src=""CleanShot 2025-05-01 at 16.56.44@2x.png""><br><br>The top used to just say ""viscera"". To get it to show the following what do I do?"
+     A: In settings, search for window.title.<br><br>Bonus: Then you can set it to something like ${activeEditorShort}${separator}${folderPath}
+
+  65. Q: [git]<br><br>Scenario:&nbsp;<br><br>I created a repo, which lives inside of viscera/.<br><br>Outside of that folder, I have descriptions/ and other files. I also turned that into a git repo as well.<br><br>I accidentally did `git add .` in the outer repo, and it added everything in viscera/ as well. I haven't made any commits or pushes yet.<br><br>How do I remove viscera/ from the staging area?
+     A: "<div>[WRONG]</div><div><h3><b>❌&nbsp;</b><b style=""font-size: 20px;"">git restore --staged viscera</b></h3></div><div><div>fatal: could not resolve HEAD</div></div><div><br></div><div>
+
+  66. Q: [tech]<br>[vscode] [windsurf]<br><br>How do you increase / decrease the width of the secondary sidebar (right sidebar)?
+     A: "You don't.<br><br>Workaround: <br><br>1. set keybinding to increase/decrease width of main view.<br>2. Hide/Show secondary sidebar (CMD+Alt+B) and sidebar (CMD+B), and then use keybindings to increase/decrease view width.<br><br> {<br>&nbsp;&nbsp;&nbsp;&nbsp; ""key"": ""cmd+alt+j"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""command"": ""runCommands"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""args"": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""commands"": [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   ""workbench.action.decreaseViewWidth"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>},<br><br>{<br>&nbsp;&nbsp;&nbsp;&nbsp; ""key"": ""cmd+alt+i"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""command"": ""runCommands"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""args"": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""commands"": [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""workbench.action.increaseViewWidth""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp; }"
+
+  67. Q: [tech]<br>[database]<br><br><div><b>In SQLite, what does “snapshot-safe” mean?</b><b></b></div>
+     A: "<div>It means that <b>readers see a consistent snapshot of the database as it existed at the moment their read began</b>, even if a write occurs during the read.</div>
+
+Cards in File 1 but missing in File 2:
+  1. Q: VSCode launch vs attach?
+     A: Launch is a recipe for starting your app in debug mode before VSCode attaches to it. This is more familiar from the perspective of server and backend development. VSCode launches and sets up the processes for you.<br><br>Attach is a recipe for how to connect VS Code's debugger to an app or process that's already running. This is more familiar from the perspective of frontend development, for example attaching VSCode's debugger to a browser that is already running.
+
+  2. Q: "[tech]<br><br>I was having an issue in vscode where my python code was running through the command line but when I ran it directly:<br><br>```<br>/usr/bin/env /Users/luketych/Dev/_P<br>rojects/_ktr/_srt/poetry/ibReader/.venv/bin/python /Users/luketych/.vscode/exte<br>nsions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../d<br>ebugpy/launcher 51366 -- -m poetry run python src_test/__init__.py <br>E+00016.116: Failed to kill Debuggee[PID=8101]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Traceback (most recent call last):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/launcher/debuggee.py"", line 190, in kill<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; os.killpg(process.pid, signal.SIGKILL)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PermissionError: [Errno 1] Operation not permitted<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stack where logged:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/launcher/debuggee.py"", line 192, in kill<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; log.swallow_exception(""Failed to kill {0}"", describe())<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File ""/Users/luketych/.vscode/extensions/ms-python.python-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher/../../debugpy/common/log.py"", line 215, in swallow_exception<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _exception(format_string, *args, **kwargs)<br>```<br><br>This is a problem with the debugger. <br><br>1. What did I do to debug this?<br>2. How did I solve it?"
+     A: 1. I copied the code that vscode was running:<br>```<br>cd /Users/luketych/Dev/_Projects/_k<br>tr/_srt/poetry/ibReader ; /usr/bin/env /Users/luketych/Dev/_Projects/_ktr/_srt/<br>poetry/ibReader/.venv/bin/python /Users/luketych/.vscode/extensions/ms-python.p<br>ython-2023.6.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 51<br>780 -- -m poetry run -vvv python -m src<br>```<br>, pasted it into the terminal and ran it to see what error I would get.<br><br>2. I updated the vscode python extension. I downgraded it earlier to try to fix another bug.<br><br>Lesson: when changing infrastructure or my tools make sure they run the same before I stop working. <br>@think: Take brief notes on the changes I make and log them into github?
+
+  3. Q: [tech]<br><br>What does `cross-env NODE_ENV=custom-env-vars mocha test/ --recursive --exit` do?
+     A: It uses cross-env, which sets the environment variables, which gets them from custom-env-vars.env, and then uses mocha to look inside the test/ folder, using the recursive option to look for test files in the subdirectories of test/. Finally it exits the process once finished.
+
+  4. Q: [vim]<br><br>move to first non-blank character of line
+     A: ^
+
+  5. Q: [tech]<br> [vscode]<br><br>list and select a file
+     A: Ctrl+tab
+
+  6. Q: Vscode: alternative to enter
+     A: Ctrl+m
+
+  7. Q: [tech] [vim]<br><br>Cut the 5th line above the cursor
+     A: :-5d
+
+  8. Q: Vscode: explorer open and close folder
+     A: o
+
+  9. Q: What to do if nodemon keeps saying the port is already in use when I save and it restarts my server?
+     A: CMD-Q to quit VSCode, and then restart.<br><br>Check out my @ktr-srt/packages/api code since I am using some scripts in my package.json file to help with that.<br><br>check out ktr.bio/nodemon
+
+  10. Q: VsCode: collapse all folders
+     A: CMD+0 (to switch to explorer)<br>CMD+left (to collapse all folders)
+
+  11. Q: [tech]<br>[frontend]<br><br>Why might oncreate() not be firing?
+     A: Server Side Rendering
+
+  12. Q: vscode: swap back n forth between two tabs
+     A: CTRL+tab
+
+  13. Q: vscode: close all tabs
+     A: Command + Alt + T
+
+  14. Q: [tech]<br><br>How do you access the postgres db?<br><br>For example, in my postgres container.
+     A: 1.<br>su - postgres<br>psql<br><br>2.<br>psql -U postgres<br>
+
+  15. Q: Start vscode, or switch to it if it's already running
+     A: Focus vscode<br>Launch vscode
+
+  16. Q: [tech] [vscode]<br><br>Open two files side-by-side.
+     A: Cmd+\
+
+  17. Q: [Vscode]<br><br>swap two lines that are next to each other
+     A: Hold option and press up or down
+
+  18. Q: "<img src=""Screenshot 2023-11-30 at 7.21.49 PM.png""><br><br>Is it good to have an __init__.py file for each utility directory?"
+     A: "<img src=""Screenshot 2023-11-30 at 7.21.54 PM.png""><br><br>The value of doing so allows you to import it like so:<br>from util.dirName import subFunction.<br><br>The cost of doing so is when you want to move the files around, you will have to change a lot of things. VSCode will automatically update references to the file path, but if I drag util/myFile.py into util/myDir then I will also have to edit util/myDir/__init__.py. This makes it heavy and difficult to play around with the folder and file structure.<br><br>If we leave everything in util/__init__.py and don't have __init__ files inside each subDir then it will be much more lightweight. And we can still import things like `from util import anything.py`<br><br>This makes a lot more sense"
+
+  19. Q: [vscode]<br><br>What to do in VSCode if the file explorer keeps scrolling automatically?
+     A: "Search in settings for&nbsp;<span style=""white-space: pre-wrap;"">explorer.autoReveal and set to False.</span>"
+
+  20. Q: "What do I do if I try to run python tests in vscode and see the following:<br><br><img src=""Screenshot 2023-12-06 at 4.43.53 PM.png"">"
+     A: "<span style=""color: rgb(12, 13, 14); background-color: rgb(227, 230, 232);"">pytest --collect-only<br></span><br>Run this command to see if there are any errors."
+
+  21. Q: Differences between pytest and unittest.
+     A: "Pytest has simpler, more powerful discovery:<br><br>`pytest .` will automatically search all subdirs for ""test_*.py"" files.<br><br>unittest requires something like `python -m unittest discover -s ""."" -p ""test_*.py""`<br>and it doesn't recurse, and you can only add one directory with the -s command.<br><br>Also, you have to name the test folder something like test_mypackage. If you don't and you are testing multiple packages all with their test folders named ""test"" then in the TEST panel in vscode is will just show test, test, test, etc.<br>It won't tell you which is which."
+
+  22. Q: jsconfig.json files
+     A: You can only have one that is used per project.<br><br>You can have more than one in a monorepo but I think from the current file VSCode will look up the directory tree and laod the first one it finds. So if I have one in the main monorepo folder, and none in the packages/util folder then it will use that one. But if I also have one inside of packages/util then it will use that one.
+
+  23. Q: How to run a node script from the terminal and then attach the vscode debugger to it?
+     A: "1. Run the script in the terminal with the --inspect-brk option,<br><br>ie `yarn workspace @ktr-logging/index run test_logging --inspect-brk`<br><br>This will pause the debugger and wait for it to attach itself.<br><br>2. Then in launch.json file add a configuration like so:<br>&nbsp; &nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""type"": ""node"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""request"": ""attach"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""name"": ""Attach to Node"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""port"": 9229<br>&nbsp;&nbsp;&nbsp; }"
+
+  24. Q: [tech]<br><br>When running `npm install &lt;pkg&gt; --global`, how do I know to which directory it is being installed to on my machine?
+     A: npm root -g
+
+  25. Q: What to do if these aren't loading?<br><br>from namespace.configuration import find_config<br>from namespace.dataManager import getInputDataDir<br>from namespace.util import getAbsPath
+     A: Restart VSCode
+
+  26. Q: [physio]<br><br>Peroneus longus, brevis actions?
+     A: Eversion, plantar-flexion
+
+  27. Q: Vscode: keyboard focus on explorer (for interacting w/ files and folders)
+     A: Shift + CMD + E
+
+  28. Q: [vscode] keyboard<br><br>focus on explorer and highlight current file that's open
+     A: Shift + CMD + E
+
+  29. Q: [tech]<br><br>What kind of dependency version specifier is this? ^<strong><code>1.2.3<br></code></strong><br>What does it mean?
+     A: Caret specifier.<br><br>It means it is compatible with version 1.2.3 and any other backward-compatible versions up to, but not including, the next major release.<br><br>It is similar to ~= but a bit more flexible. It allows installing patch and minor releases that are backwar-compatible.<br><br><div><div><div><div><div><div><div><div><div><div><div><div><div><div><strong>Example</strong>: Let's say your project specifies a dependency with <code>^1.2.3</code>. Here's what it implies:</div><ul><li>You're okay with installing version 1.2.3 of the dependency.</li><li>You're also okay with installing any version within the same major release line (1.x.x) as long as it's backward-compatible with 1.2.3.</li><li>You won't automatically get version 2.0.0 or higher because those could potentially introduce breaking changes.</li></ul><div>For example, with <code>^1.2.3</code>, you might get versions like <code>1.2.4</code>, <code>1.3.0</code>, or <code>1.9.9</code>, but you won't get versions like <code>2.0.0</code> or <code>3.0.0</code> automatically. This provides a balance between stability and the availability of bug fixes and new features.</div></div></div></div><div><div><div></div><div></div></div></div><div></div></div><div><div></div></div></div></div></div></div></div></div></div></div></div><div><div><div></div><div><br></div></div></div>
+
+  30. Q: When my python project is vscode is failing to link the namespace projects I set up, ie mylogging, utility, what do I need to do besides restarting vscode?
+     A: Select the correct python interpreter. This is likely the cause, and the reason why restarting vscode is becuase vscode will go through this step on setting up.
+
+  31. Q: Why is it important to put the pydocs below the function declaration rather than above?
+     A: By putting it above, as in javascript, this is fighting against convention, which will cause vscode to not be able to pick up the information. So when I hover over the function name it will fail to show me the parameters, and description.
+
+  32. Q: "<div>Compare the two in regards to setting breakpoints:<br></div><div><br></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;""><br></span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">class</span><span style=""color: #ffffff;""> </span><span style=""color: #4ec9b0;"">TestGlobFindFilesMatchingPattern</span><span style=""color: rgb(255, 255, 255);"">:</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #dcdcaa;"">&nbsp; &nbsp; @pytest.fixture</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">autouse</span><span style=""color: #d4d4d4;"">=</span><span style=""color: #569cd6;"">True</span><span style=""color: #ffffff;"">)</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #569cd6;"">&nbsp; &nbsp; def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">setup</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; &nbsp; &nbsp; self</span><span style=""color: #ffffff;"">.</span><span style=""color: #9cdcfe;"">test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> getTestDir()</span></span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #569cd6;"">&nbsp; &nbsp; def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">test_1</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; &nbsp; &nbsp; test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">self</span><span style=""color: #ffffff;"">.</span><span style=""color: #9cdcfe;"">test_dir</span></span></div><div><span style=""color: #9cdcfe;""><br></span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #f44747;"">----------------</span><span style=""color: rgb(255, 255, 255); background-color: rgb(34, 34, 34);"">VERSUS</span><span style=""color: #f44747;"">----------------</span><span style=""color: #d4d4d4;"">-</span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #ffffff;""> </span></div><div><span style=""color: #dcdcaa;""><br></span></div><div><span style=""color: rgb(220, 220, 170); background-color: rgb(34, 34, 34);"">@pytest.fixture</span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">env_data</span><span style=""color: #ffffff;"">():    </span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; test_environment_data</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> {</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #ce9178;"">&nbsp; &nbsp; &nbsp; &nbsp; ""test_dir""</span><span style=""color: #ffffff;"">: getTestDir()</span></span></div><div><span style=""color: rgb(255, 255, 255); background-color: rgb(34, 34, 34);"">&nbsp; &nbsp; }</span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #c586c0;"">&nbsp; &nbsp; yield</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">test_environment_data</span></span></div><br><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #569cd6;"">def</span><span style=""color: #ffffff;""> </span><span style=""color: #dcdcaa;"">test_1</span><span style=""color: #ffffff;"">(</span><span style=""color: #9cdcfe;"">env_data</span><span style=""color: #ffffff;"">):</span></span></div><div><span style=""background-color: rgb(34, 34, 34);""><span style=""color: #ffffff;""></span><span style=""color: #9cdcfe;"">&nbsp; &nbsp; test_dir</span><span style=""color: #ffffff;""> </span><span style=""color: #d4d4d4;"">=</span><span style=""color: #ffffff;""> </span><span style=""color: #9cdcfe;"">env_data</span><span style=""color: #ffffff;"">[</span><span style=""color: #ce9178;"">""test_dir""</span><span style=""color: #ffffff;"">]</span></span></div>"
+     A: If I set a breakpoint inside of the setup (setup() vs env_data()) for some reason (at least in vscode) the breakpoint will only be caught in the second example.<br><br>Breakpoints set inside of the tests themselves are ok in both cases.
+
+  33. Q: [physio]<br>[[think]] [[reflect]]<br><br>What position is worst for the spine when working?
+     A: Flexed/rounded because when the spine is extended then all vertebrae are locked and stable.<br><br>When rounded they are all unstable and can shift and rotate easily. So if you have bad habits and are twisting or leaning then it will lead to a lot of problems.<br><br>A flexed spine is good and natural for certain lifting, movements. But under a constant long duration of sitting with a flexed position we have to be aware of the strain being put on certain tissues.
+
+  34. Q: Better to use camelCase or underscore_case for column names in a database?
+     A: "CREATE TABLE ticklerFile (<br>&nbsp;&nbsp;&nbsp; id SERIAL PRIMARY KEY,<br>&nbsp;&nbsp;&nbsp; type TEXT,<br>&nbsp;&nbsp;&nbsp; parentKey TEXT,<br>&nbsp;&nbsp;&nbsp; parentOriginalName TEXT,<br>&nbsp;&nbsp;&nbsp; image_name TEXT,<br>&nbsp;&nbsp;&nbsp; snoozeToDate DATE,<br>&nbsp;&nbsp;&nbsp; snoozeToTime TIME,<br>&nbsp;&nbsp;&nbsp; autoSnoozeDays INTEGER,<br>&nbsp;&nbsp;&nbsp; image_hash TEXT UNIQUE,<br>&nbsp;&nbsp;&nbsp; image_data BYTEA<br>);<br><br>In VSCODE it looks like this:<br><br><img src=""Screenshot 2024-07-18 at 3.31.41 PM.png""><br><br>All of the capital letters are lost.<br><br><br>**** Another example, where when not sure what to do it is best to stick to convention because you don't know how things will be affected downstream."
+
+  35. Q: "Why doesn't this work?<br><br>find . | ./filter_out **/.vscode/** **/.venv/**<br><br>But this does?<br><br>find . | ./filter_out ""**/.vscode/**"" ""**/.venv/**"""
+     A: "When using quotes """" the arguments are passed directly into the function.<br><br>When not using quotes it is called ""globbing"" and the shell attempts to convert the glob in the shell before passing it on to the function."
+
+  36. Q: "Difference between these 2?<br><br>python -u ""$(dirname ""$0"")/filter_for.py"" ""$@""<br><br>python ""$(dirname ""$0"")/filter_for.py"" ""$@"""
+     A: "<div>python -u: The -u option forces Python to run in unbuffered mode, meaning output is written directly to stdout as soon as it is available, without any delay from buffering.</div>
+
+  37. Q: [vscode]<br><br>How to add a keyboard shortcut for any command?
+     A: "Find the command using Shift+CMD+P<br>Select the settings (gear icon),<br>then click on ""Keybinding"""
+
+  38. Q: [tech]<br><br>Use lsof to return only the process id's that are using port 1234
+     A: lsof -ti :1234
+
+  39. Q: [tech]<br> [macos]<br><br>Finder:<br> How do I select an item in the Favorites sidebar using only the keyboard?
+     A: 1) Shift-CMD-G to open a Go To Folder window.<br><br>2) Type the name of the favorite I see in the sidebar and press enter.
+
+  40. Q: [tech] [macos]<br><br>Finder:<br><br> previous / next folder
+     A: CMD-[<br>CMD-]
+
+  41. Q: [tech]<br><br>Finder: <br><br>start search
+     A: CMD-F
+
+  42. Q: [talon]<br><br>underscore-separated words
+     A: snake<br><br>ie. snake this is a test<br>&gt; this_is_a_test
+
+  43. Q: [talon]<br><br>All words capitalized
+     A: title<br>ie. title this is a test<br>This Is A Test
+
+  44. Q: "<img src=""paste-b6c572fc54c2b473d56d1eacab2316b893dd8aa1.jpg"">"
+     A: <b>right side: (from top to bottom)</b><br>posterior sacroiliac ligament<br>sacrospinous ligament<br>sacrotuberous ligament
+
+  45. Q: [tech]<br>[git]<br><br>how do I see the changes between your local branch and the remote branch?<br><br>Hint: use git diff
+     A: git diff origin/main
+
+  46. Q: [vscode]<br><br>Hide/Show Bottom Panel (Problems, Output, Debug Console, Terminal, etc)
+     A: CMD + J
+
+  47. Q: [vscode]<br><br>Back n forth between surrounding [ &amp; ], { &amp; }, ( &amp; ), etc
+     A: CMD + Shift + \
+
+  48. Q: How do you see a list of all vscode commands?
+     A: "Shift + Cmd + P<br><br>then&nbsp;<span style=""color: rgb(240, 246, 252); background-color: rgb(34, 34, 34);"">Preferences: Open Default Keyboard Shortcuts (JSON)</span>"
+
+  49. Q: [vscode]<br><br>What option for Alt+B, Alt+F so it stops producing characters like&nbsp;∫ƒ?<br><br>1. What is the name of the specific setting?<br>2. What is the namespace for this setting?
+     A: set to True: <br>macOptionIsMeta<br><br>Namespace: <br>terminal.integrated<br><br>full setting key: terminal.integrated.macOptionIsMeta
+
+  50. Q: [tech]<br>[bash]<br><br>How to make a script from the command line without entering vim or any other tool?
+     A: "1. cat &gt; my_file.sh &lt;&lt; EOL<br><br>2. Then I can type my script line-by-line<br><br>3. To finish, type ""EOL"", and return."
+
+  51. Q: [tech]<br><br>brave: <br><br>Recover previous tab
+     A: Cmd+Shift+T
+
+  52. Q: [vscode]<br><br>Reopen last closed editor
+     A: Cmd+Shift+T
+
+  53. Q: "When debugging a shell script in vscode/cursor, the watch statement for debug_result is 'declare -- debug_result=""5""'<br><br>What if I want it to simply be '5'?"
+     A: Watch ${debug_result} instead of debug_result
+
+  54. Q: [tech]<br><br>Types of programming errors.<br><br>Think Cells
+     A: "<img src=""cells-programming-errors-33ce76b0203860e909a13b747880fb781fc7ba61.jpg"">"
+
+  55. Q: [tech]<br><br>What kind of Unaccounted / Accounting Errors might you encounter?
+     A: Configuration Drift<br>Data Packet Loss<br>Misconfiguration<br>Misalignment<br>Resource Not Found<br>State Management Errors<br>Type Errors<br><br><pre><br>CD MM RST<br><br>Configuring Data or Misconfiguring and Misaligning Resources, State Management and Type Errors.<br><br>Imagine: <br><br>M&Ms are used by a fat accountant.<br>He is old and uses CDs and has a Nintendo.<br>You throw a CD at his M&Ms, and it lands into his Nintendo, and he presses reset because he's retarded.<br></pre>
+
+  56. Q: [tech]<br><br>What is an Integration Error?
+     A: <div><b>Integration Error</b></div><br><div><br></div><br><div>An <b>integration error</b> occurs when two or more systems, services, or components <b>fail to interact correctly</b> due to mismatches in data, protocols, or expectations. These errors typically arise when different modules, APIs, or external dependencies are integrated into a larger system.</div>
+
+  57. Q: [tech] [bash]<br><br>The pid is 1169 and I want to now find out where the process is coming from. <br><br>What folder on my machine is it from?
+     A: "<div style=""background:#f99;""><br><span>pwdx 1169</span><br><br><span><b>pwdx</b> means print working directory of a process.</span><br></div><br><br><div style=""background:#99f;""><br><span>ps -p -f 1169</span><br><q>Please Show Process Fully</q><br><pre><br>-p stands for process id<br>-f stands for full format <br></pre><br></div><br>"
+
+  58. Q: When writing a custom script using eza, fzf, htop why might the formatting be being messed up?<br><br>For example, I was using eza and when I run it in the terminal alone it prints icons and a nice grid layout. When I combined it with other commands in a custom script it was losing all formats.<br><br>Besides the quirks within vscode, what else might be happening?
+     A: &nbsp; &nbsp; Programs like eza, ls, fzf, htop, etc. check if stdout is a real terminal<br>&nbsp; &nbsp; Without a real TTY, they disable formatting, color, layout, etc.
+
+  59. Q: [vscode]<br><br>Say I have a .vscode/tasks.json file but no .vscode/launch.json flle.<br><br>How do I run it?
+     A: Shift+CMD+B
+
+  60. Q: [vscode] [devcontainers]<br><br>In a VSCode Dev Container, how can you avoid permission issues with node_modules without needing a chown in postCreateCommand?
+     A: "Avoid the permission issue by ensuring that the container always uses the correct user (like node) from the start.<br><br>How to fix it properly:<br><br>1. In your Dockerfile, set the final USER to node:<br><br>USER node<br><br>2. In your devcontainer.json, ensure the container runs as the same user:<br><br>""remoteUser"": ""node""<br><br>3. Also, avoid creating node_modules or running npm install as root during image build.<br><br>---<br><br>By aligning the build-time and runtime user, node_modules is always owned by the correct user (node), so no sudo chown is needed in postCreateCommand."
+
+  61. Q: [tech]<br>[vim]<br><br>What does this do?<br><br>:.,$s/old/new/g
+     A: "Replaces old with new from the current line until the end of the file.<br><br><br>In Vim, the comma in :.,$s/old/new/g separates the range of lines on which the substitution command should act.<br><br>Here's a breakdown:<br><br>. → the current line.<br><br>$ → the last line of the file.<br><br>.,$ → means ""from the current line to the end of the file"".<br><br><br>So:<br><br>:.,$s/old/new/g<br><br>says: ""Substitute 'old' with 'new' on every line from the current line (.) through the last line ($), globally on each line (g).""<br><br>The comma is the range separator between the starting and ending lines. "
+
+  62. Q: "[vscode]<br><br><img src=""CleanShot 2025-05-01 at 16.56.44@2x.png""><br><br>The top used to just say ""viscera"". To get it to show the following what do I do?"
+     A: In settings, search for window.title.<br><br>Bonus: Then you can set it to something like ${activeEditorShort}${separator}${folderPath}
+
+  63. Q: [tech]<br>[git]<br><br>Scenario:&nbsp;<br><br>I created a repo, which lives inside of viscera/.<br><br>Outside of that folder, I have descriptions/ and other files. I also turned that into a git repo as well.<br><br>I accidentally did `git add .` in the outer repo, and it added everything in viscera/ as well. I haven't made any commits or pushes yet.<br><br>How do I remove viscera/ from the staging area?
+     A: "<div>[WRONG]</div><div><h3><b>❌&nbsp;</b><b style=""font-size: 20px;"">git restore --staged viscera</b></h3></div><div><div>fatal: could not resolve HEAD</div></div><div><br></div><div><br><div><div>🧯 <b>Why This Happens</b><b></b></div><br><div>git restore --staged relies on HEAD (the latest commit) to know what to restore to.</div><br><div>If there are <b>no commits yet</b>, Git has no reference point — so the command fails.</div></div></div><div><br></div><div>[CORRECT]</div><div><div><h3><b>✅&nbsp;</b><b style=""font-size: 20px;"">git reset viscera</b></h3></div><br><div><ul><li><br><div>Unstages viscera</div><br></li><li><br><div>✅ <b>Does NOT delete files from working directory.</b><b></b></div><br></li><li><br><div>✅ <b>If viscera was already committed then git will still track it.</b><b></b></div><br></li><li><br><div>No change to git commit history.</div></li></ul></div></div><div><br></div><div>[CORRECT]</div><div><div><h3><b>✅&nbsp;</b><b style=""font-size: 20px;"">git rm --cached -r viscera</b></h3></div><div><ul><li><br><div>✅ <b>Keeps all files on disk. Does NOT delete files fom working directory.</b><b></b></div><br></li><li><br><div>✅ Git marks it for <b>deletion from the repo on the next commit.</b><b></b></div><br></li><li><br><div>💡 Use when you want to:</div><br><div><ul><li><br><div>Stop tracking a folder</div><br></li><li><br><div>Add it to .gitignore afterward</div></li></ul></div></li></ul></div></div><div><b><br></b></div><div><h3><b>❌&nbsp;</b><b style=""font-size: 20px;"">git rm -r viscera</b><b style=""font-size: 20px;"">&nbsp;(⚠️ Dangerous)</b></h3></div><div><br><div><ul><li><br><div><div><ul><li><br><div><b>Deletes the viscera folder from disk</b><b></b></div><br></li><li><br><div>Removes it from Git <i>and</i> your filesystem</div><br></li><li><br><div>Only use if you want to permanently delete it</div></li></ul></div></div></li></ul></div></div><div><br></div>"
+
+  64. Q: [vscode] [windsurf]<br><br>How do you increase / decrease the width of the secondary sidebar (right sidebar)?
+     A: "You don't.<br><br>Workaround: <br><br>1. set keybinding to increase/decrease width of main view.<br>2. Hide/Show secondary sidebar (CMD+Alt+B) and sidebar (CMD+B), and then use keybindings to increase/decrease view width.<br><br> {<br>&nbsp;&nbsp;&nbsp;&nbsp; ""key"": ""cmd+alt+j"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""command"": ""runCommands"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""args"": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""commands"": [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   ""workbench.action.decreaseViewWidth"",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>},<br><br>{<br>&nbsp;&nbsp;&nbsp;&nbsp; ""key"": ""cmd+alt+i"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""command"": ""runCommands"",<br>&nbsp;&nbsp;&nbsp;&nbsp; ""args"": {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""commands"": [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ""workbench.action.increaseViewWidth""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<br>&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp; }"
+
+  65. Q: "
+     A: "Abductor Hallucis<br>Flexor Digitorum Longus<br>Flexor Hallucis Longus<br>Flexor Hallucis Brevis<br>Tibialis Posterior<br>Tibialis Anterior<br><br><img src=""flexor-hallucis-longus.jpg""><br><br><img src=""Tibialis-anterior-pathology-1.png""><br><br><img src=""pEFdqFDDphKIEuafNErPQ_gWQ6QpOoEQ6B4IlUz2pg_4naQ4XUTMs_M._abductor_hallucis_1.jpeg""><br><br><img src=""flexor-hallucis-brevis-anatomy-leg-600w-121704187.jpg"">
+
+  66. Q: "
+     A: "1.<br>su - postgres<br>psql<br><br>2.<br>psql -U postgres
+
+  67. Q: [tech]<br><br>su postgres <br>Vs<br>su - postgres
+     A: <b>su postgres</b><br> Keeps the current directory and most environment variables (like PATH, HOME) from the original user. It does not simulate a login, so it may not load the 'postgres' user's shell configuration files, like ~/.bash_profile.<br><br><b>su - postgres</b><br>Simulates a login shell, changing to the 'postgres' user's home directory (usually /var/lib/postgres) and setting environment variables based on the 'postgres' user's configuration, ensuring the correct setup for PostgreSQL tasks.
+
+  68. Q: "
+     A: ":g/^function /,/^end$/d
+
+  69. Q: [tech]<br><br>What can you do if you are running tests and they keep getting hung, or not exiting?
+     A: - pass an exit flag. Ie mocha --exit<br>This tells mocha to force exit once all tests have finished running.<br><br>- perform a more thorough cleanup, shutdown after all tests are finished. There might be processes still running, async tasks, or db connections still open.
+
+  70. Q: [tech]<br><br>Alternative to postman?
+     A: HTTPie
+
+  71. Q: [tech]<br>[terminal]<br><br>What input events are terminals typically unable to detect?
+     A: Terminals usually cannot detect key-up and key-down events, only key presses.
+
+  72. Q: [tech]<br>[terminal]<br><br>Can terminals detect key chords (multiple keys simultaneously)?
+     A: Not reliably.
+
+  73. Q: [tech]<br>[terminal]<br><br>Why do terminals often confuse TAB with Ctrl+I?
+     A: Many terminals send the same ASCII code (0x09) for both, making them indistinguishable.
+
+  74. Q: [tech]<br>[terminal]<br><br>Are modifier keys (shift, Ctrl, Alt, etc) reliable in the terminal?
+     A: No.<br><br>Especially when combined with other keys.<br><br><br>Modifier keys like Ctrl, Shift, and Alt modify other key inputs but terminals handle them inconsistently. <br><br>Ctrl is usually recognized, Shift often changes letter case, and Alt can send ambiguous escape sequences. <br><br>Terminals use varying, non-standard escape codes to report modifiers, often failing to detect multiple modifiers simultaneously. <br><br>This inconsistency causes bugs and limits shortcut support, especially in remote shells or multiplexers. <br><br>Newer terminals improve support, but handling modifiers remains a common challenge in terminal UI development.<br>
+
+  75. Q: [tech]<br>[terminal]<br><br>What 2 limitations (in regards to terminal input) makes it very complicated for building advanced TUIs?
+     A: Can't detect keyup/keydown events.<br>Can't detect multiple simultaneous keys.
+
+Content differences in shared cards:
+  Difference 1 (card index 1695):
+    Question: "<img src=""paste-b6c572fc54c2b473d56d1eacab2316b893dd8aa1.jpg"">"
+    File 1 Answer: <b>right side: (from top to bottom)</b><br>posterior sacroiliac ligament<br>sacrospinous ligament<br>sacrotuberous ligament
+    File 2 Answer: <b>left side:</b><br>sacrospinous ligament<br><br><b>right side: (from top to bottom)</b><br>posterior sacroiliac ligament<br>sacrospinous ligament<br>sacrotuberous ligament
+
+  Difference 2 (card index 76):
+    Question: "
+    File 1 Answer: ":g/^function /,/^end$/d
+    File 2 Answer: "[baye's theorem]<br><br>Show visual proof of Baye's Theorem.<br><br><br>	<img src=""CleanShot 2025-05-09 at 14.17.18@2x.png""><br><div id=""io-extra-wrapper"">
+
+  Difference 3 (card index 1862):
+    Question: [tech] [bash]<br><br>The pid is 1169 and I want to now find out where the process is coming from. <br><br>What folder on my machine is it from?
+    File 1 Answer: "<div style=""background:#f99;""><br><span>pwdx 1169</span><br><br><span><b>pwdx</b> means print working directory of a process.</span><br></div><br><br><div style=""background:#99f;""><br><span>ps -p -f 1169</span><br><q>Please Show Process Fully</q><br><pre><br>-p stands for process id<br>-f stands for full format <br></pre><br></div><br>"
+    File 2 Answer: "<div style=""background:#f99;""><br><span>pwdx 1169</span><br><br><span><b>pwdx</b> means print working directory of a process.</span><br></div><br><br><div style=""background:#99f;""><br><span>ps -p -f 1169</span><br><pre><br>-p stands for process id<br>-f stands for full format <br></pre><br></div><br>"
+
+  Difference 4 (card index 1853):
+    Question: [tech]<br><br>What kind of Unaccounted / Accounting Errors might you encounter?
+    File 1 Answer: Configuration Drift<br>Data Packet Loss<br>Misconfiguration<br>Misalignment<br>Resource Not Found<br>State Management Errors<br>Type Errors<br><br><pre><br>CD MM RST<br><br>Configuring Data or Misconfiguring and Misaligning Resources, State Management and Type Errors.<br><br>Imagine: <br><br>M&Ms are used by a fat accountant.<br>He is old and uses CDs and has a Nintendo.<br>You throw a CD at his M&Ms, and it lands into his Nintendo, and he presses reset because he's retarded.<br></pre>
+    File 2 Answer: Configuration Drift<br>Data Packet Loss<br>Misconfiguration<br>Misalignment<br>Resource Not Found<br>State Management Errors<br>Type Errors<br><br>CD MM RST<br><br>CDs Makes the Most Retarded Sense Today
+
