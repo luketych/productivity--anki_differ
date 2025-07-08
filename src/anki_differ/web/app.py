@@ -8,10 +8,10 @@ from flask import Flask, render_template, request, jsonify, send_file, redirect,
 from werkzeug.utils import secure_filename
 import tempfile
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(__name__, template_folder="../../../templates")
 app.config['SECRET_KEY'] = 'anki-diff-tool-secret-key'
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-app.config['DATA_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../src/uploads')
+app.config['DATA_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../src/data')
 
 # Create directories if they don't exist
 for folder in [app.config['UPLOAD_FOLDER'], app.config['DATA_FOLDER']]:
@@ -202,13 +202,13 @@ def upload():
     with open(os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json'), 'w') as f:
         json.dump(comparison_data, f, indent=2)
     
-    return redirect(url_for('select_cards_api_debug'))
+    return redirect(url_for('select_cards'))
 
 
 # Removed old /select route - now using API-driven approach
 @app.route('/select')
 def select_cards():
-    """Use the API-driven version which works correctly"""
+    """Main card selection interface - API-driven"""
     data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
     if not os.path.exists(data_file):
         return redirect(url_for('index'))
@@ -224,7 +224,7 @@ def select_cards():
         'headers': data.get('headers', {})
     }
     
-    return render_template('select_api_debug.html', data=template_data)
+    return render_template('select.html', data=template_data)
 
 
 @app.route('/select-new')
@@ -248,7 +248,7 @@ def select_cards_new():
     return render_template('select_new.html', data=template_data)
 
 
-@app.route('/select')
+@app.route('/select-api-debug')
 def select_cards_api_debug():
     """API-driven UI for debugging tab content loading issues"""
     data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
@@ -276,12 +276,12 @@ def select_cards_api_debug():
         'headers': data.get('headers', {})
     }
     
-    return render_template('select_api_debug.html', data=template_data)
+    return render_template('select.html', data=template_data)
 
 
 @app.route('/api/cards/<card_type>')
 def get_cards_by_type(card_type):
-    """API endpoint to fetch cards by type for debugging"""
+    """API endpoint to fetch cards by type"""
     data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
     if not os.path.exists(data_file):
         return jsonify({'error': 'No comparison data found'}), 404
@@ -302,29 +302,12 @@ def get_cards_by_type(card_type):
     
     cards = data.get(card_mapping[card_type], [])
     
-    # Debug logging
-    print(f"\n=== DEBUG: API /api/cards/{card_type} ===")
-    print(f"Mapped to: {card_mapping[card_type]}")
-    print(f"Cards found: {len(cards)}")
-    if cards and len(cards) > 0:
-        print(f"First card sample: {cards[0]}")
-    print("=== END DEBUG ===\n")
-    
-    # Add debug information
-    debug_info = {
-        'card_type': card_type,
-        'total_cards': len(cards),
-        'data_key': card_mapping[card_type],
-        'file1_name': data.get('file1_name', 'File 1'),
-        'file2_name': data.get('file2_name', 'File 2'),
-        'timestamp': os.path.getmtime(data_file)
-    }
-    
     return jsonify({
         'success': True,
-        'debug_info': debug_info,
         'cards': cards,
-        'count': len(cards)
+        'count': len(cards),
+        'file1_name': data.get('file1_name', 'File 1'),
+        'file2_name': data.get('file2_name', 'File 2')
     })
 
 
@@ -358,6 +341,149 @@ def get_comparison_status():
         },
         'file_timestamp': os.path.getmtime(data_file)
     })
+
+
+@app.route('/debug/select-minimal')
+def debug_select_minimal():
+    """Test minimal select page without complex JavaScript"""
+    data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
+    if not os.path.exists(data_file):
+        return "<h1>No comparison data found</h1><p>Please upload files first.</p>"
+    
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+    
+    print("\n=== DEBUG: Minimal select test ===")
+    print(f"Different cards: {len(data.get('different_cards', []))}")
+    print(f"Identical cards: {len(data.get('identical_cards', []))}")
+    print("=== END DEBUG ===\n")
+    
+    return render_template('select_minimal.html', data=data)
+
+
+@app.route('/debug/template-test')
+def debug_template_test():
+    """Test template data accessibility with simple debug template"""
+    data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
+    if not os.path.exists(data_file):
+        return "<h1>No comparison data found</h1><p>Please upload files first.</p>"
+    
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+    
+    print("\n=== DEBUG: Template test route ===")
+    print(f"Passing data with keys: {list(data.keys())}")
+    print(f"Different cards: {len(data.get('different_cards', []))}")
+    print(f"Identical cards: {len(data.get('identical_cards', []))}")
+    print("=== END DEBUG ===\n")
+    
+    return render_template('debug_template.html', data=data)
+
+
+@app.route('/debug/card-loading')
+def debug_card_loading():
+    """Debug route to test card loading without complex UI"""
+    data_file = os.path.join(app.config['DATA_FOLDER'], 'comparison_data.json')
+    if not os.path.exists(data_file):
+        return "<h1>No comparison data found</h1><p>Please upload files first.</p>"
+    
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+    
+    # Create simple HTML to test data accessibility
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Card Loading Debug</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+            .card-sample { background: #f9f9f9; padding: 10px; margin: 5px 0; }
+            pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        </style>
+    </head>
+    <body>
+        <h1>Card Loading Debug Information</h1>
+        
+        <div class="debug-section">
+            <h2>Data Structure</h2>
+            <p><strong>Data Keys:</strong> {data_keys}</p>
+            <p><strong>File1 Name:</strong> {file1_name}</p>
+            <p><strong>File2 Name:</strong> {file2_name}</p>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Card Counts</h2>
+            <p><strong>Different Cards:</strong> {different_count}</p>
+            <p><strong>Identical Cards:</strong> {identical_count}</p>
+            <p><strong>Unique File1:</strong> {unique1_count}</p>
+            <p><strong>Unique File2:</strong> {unique2_count}</p>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Stats Object</h2>
+            <pre>{stats}</pre>
+        </div>
+        
+        <div class="debug-section">
+            <h2>Sample Cards</h2>
+            {card_samples}
+        </div>
+        
+        <div class="debug-section">
+            <h2>JavaScript Data Test</h2>
+            <div id="js-test-results"></div>
+            <script>
+                const data = {data_json};
+                
+                console.log('DEBUG: JavaScript data object:', data);
+                
+                const results = document.getElementById('js-test-results');
+                results.innerHTML = `
+                    <p><strong>JS can access data:</strong> ${{data ? 'Yes' : 'No'}}</p>
+                    <p><strong>JS different_cards:</strong> ${{data.different_cards ? data.different_cards.length : 'undefined'}}</p>
+                    <p><strong>JS identical_cards:</strong> ${{data.identical_cards ? data.identical_cards.length : 'undefined'}}</p>
+                    <p><strong>JS unique_file1:</strong> ${{data.unique_file1 ? data.unique_file1.length : 'undefined'}}</p>
+                    <p><strong>JS unique_file2:</strong> ${{data.unique_file2 ? data.unique_file2.length : 'undefined'}}</p>
+                `;
+            </script>
+        </div>
+    </body>
+    </html>
+    """.format(
+        data_keys=list(data.keys()),
+        file1_name=data.get('file1_name', 'N/A'),
+        file2_name=data.get('file2_name', 'N/A'),
+        different_count=len(data.get('different_cards', [])),
+        identical_count=len(data.get('identical_cards', [])),
+        unique1_count=len(data.get('unique_file1', [])),
+        unique2_count=len(data.get('unique_file2', [])),
+        stats=json.dumps(data.get('stats', {}), indent=2),
+        card_samples=generate_card_samples(data),
+        data_json=json.dumps(data).replace('</script>', '<\\/script>')
+    )
+    
+    return html
+
+
+def generate_card_samples(data):
+    """Generate HTML samples of cards for debugging"""
+    samples = []
+    
+    for card_type in ['different_cards', 'identical_cards', 'unique_file1', 'unique_file2']:
+        cards = data.get(card_type, [])
+        if cards:
+            card = cards[0]
+            samples.append(f"""
+                <div class="card-sample">
+                    <h4>{card_type}</h4>
+                    <p><strong>Question:</strong> {card.get('question', 'N/A')[:100]}...</p>
+                    <p><strong>Answer:</strong> {str(card.get('answer', card.get('file1_answer', 'N/A')))[:100]}...</p>
+                </div>
+            """)
+    
+    return ''.join(samples)
 
 
 @app.route('/save_selections', methods=['POST'])

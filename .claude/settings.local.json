@@ -15,7 +15,17 @@
       "Bash(mkdir:*)",
       "Bash(python run_tests:*)",
       "Bash(pytest:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(find:*)",
+      "Bash(diff:*)",
+      "Bash(mv:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(uv add:*)",
+      "Bash(git checkout:*)",
+      "WebFetch(domain:127.0.0.1)",
+      "Bash(ls:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

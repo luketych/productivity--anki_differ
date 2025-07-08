@@ -1,0 +1,6 @@
+#separator:tab
+#html:true
+What is the capital of France?	Paris
+What is 2+2?	4
+What color is the sky?	Blue
+What is the largest planet?	Jupiter

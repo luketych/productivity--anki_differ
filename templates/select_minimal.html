@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Select Test</title>
+    <style>
+        .anki-card { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Card Display Test</h1>
+    
+    <div class="debug-info">
+        <h2>Debug Info</h2>
+        <p>Different cards expected: {{ data.different_cards|length }}</p>
+        <p>Identical cards expected: {{ data.identical_cards|length }}</p>
+    </div>
+    
+    <h2>Different Cards (No JavaScript, No Pagination)</h2>
+    <div id="different-cards-container">
+        {% for card in data.different_cards %}
+        <div class="anki-card different-card" data-index="{{ loop.index0 }}">
+            <h3>Card {{ loop.index }}</h3>
+            <p><strong>Question:</strong> {{ card.question[:100]|safe }}...</p>
+            <p><strong>File1:</strong> {{ card.file1_answer[:100]|safe }}...</p>
+            <p><strong>File2:</strong> {{ card.file2_answer[:100]|safe }}...</p>
+            <p><strong>Selected:</strong> {{ card.selected }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <h2>Identical Cards (First 5 only)</h2>
+    <div id="identical-cards-container">
+        {% for card in data.identical_cards[:5] %}
+        <div class="anki-card identical-card">
+            <h3>Card {{ loop.index }}</h3>
+            <p><strong>Question:</strong> {{ card.question[:100]|safe }}...</p>
+            <p><strong>Answer:</strong> {{ card.answer[:100]|safe }}...</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="debug-info">
+        <h2>JavaScript Test</h2>
+        <div id="js-test"></div>
+        <script>
+            const data = {{ data|tojson|safe }};
+            
+            console.log('=== MINIMAL SELECT TEST ===');
+            console.log('Data object:', data);
+            console.log('Different cards:', data.different_cards ? data.different_cards.length : 'undefined');
+            console.log('Identical cards:', data.identical_cards ? data.identical_cards.length : 'undefined');
+            
+            // Count DOM elements
+            const differentCards = document.querySelectorAll('.different-card');
+            const identicalCards = document.querySelectorAll('.identical-card');
+            
+            console.log('DOM different cards:', differentCards.length);
+            console.log('DOM identical cards:', identicalCards.length);
+            
+            document.getElementById('js-test').innerHTML = `
+                <p>JS Data Different: ${data.different_cards ? data.different_cards.length : 'undefined'}</p>
+                <p>JS Data Identical: ${data.identical_cards ? data.identical_cards.length : 'undefined'}</p>
+                <p>DOM Different: ${differentCards.length}</p>
+                <p>DOM Identical: ${identicalCards.length}</p>
+                <p>Match: ${data.different_cards && data.different_cards.length === differentCards.length ? '✅' : '❌'}</p>
+            `;
+        </script>
+    </div>
+</body>
+</html>

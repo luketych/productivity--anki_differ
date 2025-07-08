@@ -102,11 +102,11 @@
                 <div class="col-md-6">
                     <h2>Anki Diff Selection Tool</h2>
                     <div class="d-flex flex-wrap">
-                        <span class="badge bg-primary me-2">Total Cards: {{ data.stats.file1_total + data.stats.file2_total }}</span>
-                        <span class="badge bg-success me-2">Identical: {{ data.stats.identical }}</span>
-                        <span class="badge bg-warning me-2">Different: {{ data.stats.different }}</span>
-                        <span class="badge bg-info me-2">Only in {{ data.file1_name }}: {{ data.stats.only_file1 }}</span>
-                        <span class="badge bg-info">Only in {{ data.file2_name }}: {{ data.stats.only_file2 }}</span>
+                        <span class="badge bg-primary me-2">Total Cards: 6</span>
+                        <span class="badge bg-success me-2">Identical: 1</span>
+                        <span class="badge bg-warning me-2">Different: 1</span>
+                        <span class="badge bg-info me-2">Only in Test File 1: 1</span>
+                        <span class="badge bg-info">Only in Test File 2: 1</span>
                     </div>
                 </div>
                 <div class="col-md-6 text-end">
@@ -117,7 +117,20 @@
             </div>
         </div>
         <!-- Tabs for different card categories -->
-        <ul class="nav nav-tabs" id="cardTabs" role="tablist">n            <li class="nav-item" role="presentation">n                <button class="nav-link active" id="different-tab" data-bs-toggle="tab" data-bs-target="#different" type="button" role="tab" aria-controls="different" aria-selected="true">Different Cards ({{ data.stats.different }})</button>n            </li>n            <li class="nav-item" role="presentation">n                <button class="nav-link" id="identical-tab" data-bs-toggle="tab" data-bs-target="#identical" type="button" role="tab" aria-controls="identical" aria-selected="false">Identical Cards ({{ data.stats.identical }})</button>n            </li>n            <li class="nav-item" role="presentation">n                <button class="nav-link" id="unique1-tab" data-bs-toggle="tab" data-bs-target="#unique1" type="button" role="tab" aria-controls="unique1" aria-selected="false">Only in {{ data.file1_name }} ({{ data.stats.only_file1 }})</button>n            </li>n            <li class="nav-item" role="presentation">n                <button class="nav-link" id="unique2-tab" data-bs-toggle="tab" data-bs-target="#unique2" type="button" role="tab" aria-controls="unique2" aria-selected="false">Only in {{ data.file2_name }} ({{ data.stats.only_file2 }})</button>n            </li>n        </ul>        </ul>
+        <ul class="nav nav-tabs" id="cardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="different-tab" data-bs-toggle="tab" data-bs-target="#different" type="button" role="tab" aria-controls="different" aria-selected="true">Different Cards (1)</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="identical-tab" data-bs-toggle="tab" data-bs-target="#identical" type="button" role="tab" aria-controls="identical" aria-selected="false">Identical Cards (1)</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="unique1-tab" data-bs-toggle="tab" data-bs-target="#unique1" type="button" role="tab" aria-controls="unique1" aria-selected="false">Only in Test File 1 (1)</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="unique2-tab" data-bs-toggle="tab" data-bs-target="#unique2" type="button" role="tab" aria-controls="unique2" aria-selected="false">Only in Test File 2 (1)</button>
+            </li>
+        </ul>
 
         <div class="tab-content" id="cardTabsContent">
             <!-- Different cards tab -->
@@ -129,31 +142,31 @@
                 <div id="differentCards">
                     <div id="differentPagination" class="pagination"></div>
                     
-                    {% for card in data.different_cards %}
-                    <div class="anki-card different-card" data-index="{{ loop.index0 }}">
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
+                    
+                    <div class="anki-card different-card" data-index="0">
+                        <div class="anki-question html-content">What is 2+2?</div>
                         <div class="row">
                             <div class="col-md-6">
-                                <h5>{{ data.file1_name }}</h5>
-                                <div class="anki-answer html-content {% if card.selected == 'file1' %}selected{% endif %}" data-source="file1">{{ card.file1_answer|safe }}</div>
+                                <h5>Test File 1</h5>
+                                <div class="anki-answer html-content selected" data-source="file1">4</div>
                             </div>
                             <div class="col-md-6">
-                                <h5>{{ data.file2_name }}</h5>
-                                <div class="anki-answer html-content {% if card.selected == 'file2' %}selected{% endif %}" data-source="file2">{{ card.file2_answer|safe }}</div>
+                                <h5>Test File 2</h5>
+                                <div class="anki-answer html-content " data-source="file2">Five</div>
                             </div>
                         </div>
                         <div class="card-selector">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="select-{{ loop.index0 }}" id="select1-{{ loop.index0 }}" value="file1" {% if card.selected == 'file1' %}checked{% endif %}>
-                                <label class="form-check-label" for="select1-{{ loop.index0 }}">Use {{ data.file1_name }}</label>
+                                <input class="form-check-input" type="radio" name="select-0" id="select1-0" value="file1" checked>
+                                <label class="form-check-label" for="select1-0">Use Test File 1</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="select-{{ loop.index0 }}" id="select2-{{ loop.index0 }}" value="file2" {% if card.selected == 'file2' %}checked{% endif %}>
-                                <label class="form-check-label" for="select2-{{ loop.index0 }}">Use {{ data.file2_name }}</label>
+                                <input class="form-check-input" type="radio" name="select-0" id="select2-0" value="file2" >
+                                <label class="form-check-label" for="select2-0">Use Test File 2</label>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                    
                     
                     <div id="differentPaginationBottom" class="pagination"></div>
                 </div>
@@ -168,12 +181,12 @@
                 <div id="identicalCards">
                     <div id="identicalPagination" class="pagination"></div>
                     
-                    {% for card in data.identical_cards %}
-                    <div class="anki-card identical-card identical-card">
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                    
+                    <div class="anki-card identical-card">
+                        <div class="anki-question html-content">What is the capital of France?</div>
+                        <div class="anki-answer html-content">Paris</div>
                     </div>
-                    {% endfor %}
+                    
                     
                     <div id="identicalPaginationBottom" class="pagination"></div>
                 </div>
@@ -181,27 +194,27 @@
             <!-- Unique cards in File 1 tab -->
             <div class="tab-pane fade" id="unique1" role="tabpanel" aria-labelledby="unique1-tab">
                 <div class="search-box">
-                    <input type="text" id="unique1Search" class="form-control" placeholder="Search cards unique to {{ data.file1_name }}...">
+                    <input type="text" id="unique1Search" class="form-control" placeholder="Search cards unique to Test File 1...">
                 </div>
                 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="includeAllFile1" checked>
-                    <label class="form-check-label" for="includeAllFile1">Include all cards from {{ data.file1_name }} in export</label>
+                    <label class="form-check-label" for="includeAllFile1">Include all cards from Test File 1 in export</label>
                 </div>
                 
                 <div id="unique1Cards">
                     <div id="unique1Pagination" class="pagination"></div>
                     
-                    {% for card in data.unique_file1 %}
-                    <div class="anki-card unique-card unique1-card" data-index="{{ loop.index0 }}">
+                    
+                    <div class="anki-card unique-card unique1-card" data-index="0">
                         <div class="form-check">
-                            <input class="form-check-input unique1-checkbox" type="checkbox" id="unique1-{{ loop.index0 }}" data-index="{{ loop.index0 }}" {% if card.selected %}checked{% endif %}>
-                            <label class="form-check-label" for="unique1-{{ loop.index0 }}">Include this card</label>
+                            <input class="form-check-input unique1-checkbox" type="checkbox" id="unique1-0" data-index="0" checked>
+                            <label class="form-check-label" for="unique1-0">Include this card</label>
                         </div>
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                        <div class="anki-question html-content">What color is the sky?</div>
+                        <div class="anki-answer html-content">Blue</div>
                     </div>
-                    {% endfor %}
+                    
                     
                     <div id="unique1PaginationBottom" class="pagination"></div>
                 </div>
@@ -210,27 +223,27 @@
             <!-- Unique cards in File 2 tab -->
             <div class="tab-pane fade" id="unique2" role="tabpanel" aria-labelledby="unique2-tab">
                 <div class="search-box">
-                    <input type="text" id="unique2Search" class="form-control" placeholder="Search cards unique to {{ data.file2_name }}...">
+                    <input type="text" id="unique2Search" class="form-control" placeholder="Search cards unique to Test File 2...">
                 </div>
                 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="includeAllFile2" checked>
-                    <label class="form-check-label" for="includeAllFile2">Include all cards from {{ data.file2_name }} in export</label>
+                    <label class="form-check-label" for="includeAllFile2">Include all cards from Test File 2 in export</label>
                 </div>
                 
                 <div id="unique2Cards">
                     <div id="unique2Pagination" class="pagination"></div>
                     
-                    {% for card in data.unique_file2 %}
-                    <div class="anki-card unique-card unique1-card" data-index="{{ loop.index0 }}">
+                    
+                    <div class="anki-card unique-card unique2-card" data-index="0">
                         <div class="form-check">
-                            <input class="form-check-input unique2-checkbox" type="checkbox" id="unique2-{{ loop.index0 }}" data-index="{{ loop.index0 }}" {% if card.selected %}checked{% endif %}>
-                            <label class="form-check-label" for="unique2-{{ loop.index0 }}">Include this card</label>
+                            <input class="form-check-input unique2-checkbox" type="checkbox" id="unique2-0" data-index="0" checked>
+                            <label class="form-check-label" for="unique2-0">Include this card</label>
                         </div>
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                        <div class="anki-question html-content">What is the largest planet?</div>
+                        <div class="anki-answer html-content">Jupiter</div>
                     </div>
-                    {% endfor %}
+                    
                     
                     <div id="unique2PaginationBottom" class="pagination"></div>
                 </div>
@@ -255,7 +268,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Initialize Bootstrap tabsn        document.addEventListener("DOMContentLoaded", function() {n            // Create tab objectsn            var tabs = [n                new bootstrap.Tab(document.getElementById("different-tab")),n                new bootstrap.Tab(document.getElementById("identical-tab")),n                new bootstrap.Tab(document.getElementById("unique1-tab")),n                new bootstrap.Tab(document.getElementById("unique2-tab"))n            ];nn            // Add click handlers to ensure proper activationn            document.querySelectorAll(".nav-link").forEach(function(tabEl) {n                tabEl.addEventListener("click", function() {n                    // Get the target pane IDn                    var targetId = this.getAttribute("data-bs-target");n                    n                    // Show all panes so visibility updates work properlyn                    document.querySelectorAll(".tab-pane").forEach(function(pane) {n                        pane.classList.remove("d-none");n                    });n                    n                    // Activate the tabn                    var tab = bootstrap.Tab.getInstance(this) || new bootstrap.Tab(this);n                    tab.show();n                    n                    // Apply pagination after tab switchn                    if(targetId === "#identical") {n                        updateVisibility("identical");n                    } else if(targetId === "#unique1") {n                        updateVisibility("unique1");n                    } else if(targetId === "#unique2") {n                        updateVisibility("unique2");n                    }n                });n            });n        });n        // Initialize pagination
+        // Initialize pagination
         const ITEMS_PER_PAGE = 10;
         let currentPage = {
             'different': 1,
@@ -265,18 +278,63 @@
         };
         
         // Get data from template
-        const data = {{ data|tojson|safe }};
+        const data = {"different_cards": [{"file1_answer": "4", "file2_answer": "Five", "question": "What is 2+2?", "selected": "file1"}], "file1_name": "Test File 1", "file1_path": "/Users/luketych/Dev/_productivity/anki_differ/src/anki_differ/web/../../../src/uploads/test_file1.txt", "file2_name": "Test File 2", "file2_path": "/Users/luketych/Dev/_productivity/anki_differ/src/anki_differ/web/../../../src/uploads/test_file2.txt", "headers": {"html": "true", "separator": "tab"}, "identical_cards": [{"answer": "Paris", "question": "What is the capital of France?", "selected": "file1"}], "stats": {"different": 1, "file1_total": 3, "file2_total": 3, "identical": 1, "only_file1": 1, "only_file2": 1}, "unique_file1": [{"answer": "Blue", "question": "What color is the sky?", "selected": true}], "unique_file2": [{"answer": "Jupiter", "question": "What is the largest planet?", "selected": true}]};
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up pagination
+            // Debug: Check what data we have
+            console.log('DEBUG: Initial data check:');
+            console.log(`- different_cards: ${data.different_cards ? data.different_cards.length : 'undefined'}`);
+            console.log(`- identical_cards: ${data.identical_cards ? data.identical_cards.length : 'undefined'}`);
+            console.log(`- unique_file1: ${data.unique_file1 ? data.unique_file1.length : 'undefined'}`);
+            console.log(`- unique_file2: ${data.unique_file2 ? data.unique_file2.length : 'undefined'}`);
+            
+            // Debug: Check DOM elements
+            console.log('DEBUG: DOM elements check:');
+            console.log(`- different-card elements: ${document.querySelectorAll('.different-card').length}`);
+            console.log(`- identical-card elements: ${document.querySelectorAll('.identical-card').length}`);
+            console.log(`- unique1-card elements: ${document.querySelectorAll('.unique1-card').length}`);
+            console.log(`- unique2-card elements: ${document.querySelectorAll('.unique2-card').length}`);
+            
+            // Set up pagination for all tabs
             setupPagination('different', data.different_cards);
             setupPagination('identical', data.identical_cards);
             setupPagination('unique1', data.unique_file1);
             setupPagination('unique2', data.unique_file2);
             
-            // Update visibility based on current page
+            // Update visibility only for the active tab initially (different)
             updateVisibility('different');
+            
+            // Set up tab switching to update visibility when tabs become active
+            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(event) {
+                    const target = event.target.getAttribute('data-bs-target');
+                    let tabType = '';
+                    if (target === '#different') tabType = 'different';
+                    else if (target === '#identical') tabType = 'identical';
+                    else if (target === '#unique1') tabType = 'unique1';
+                    else if (target === '#unique2') tabType = 'unique2';
+                    
+                    console.log(`DEBUG: Tab switched to ${target}, tabType=${tabType}`);
+                    
+                    if (tabType) {
+                        // Check if cards exist in the DOM
+                        const cards = document.querySelectorAll(`.${tabType}-card`);
+                        console.log(`DEBUG: Found ${cards.length} cards for ${tabType}`);
+                        
+                        // Check data object
+                        let dataArray = [];
+                        if (tabType === 'different') dataArray = data.different_cards;
+                        else if (tabType === 'identical') dataArray = data.identical_cards;
+                        else if (tabType === 'unique1') dataArray = data.unique_file1;
+                        else if (tabType === 'unique2') dataArray = data.unique_file2;
+                        
+                        console.log(`DEBUG: Data array for ${tabType} has ${dataArray.length} items`);
+                        
+                        updateVisibility(tabType);
+                    }
+                });
+            });
             
             // Set up search functionality
             document.getElementById('differentSearch').addEventListener('input', function() {
@@ -388,16 +446,18 @@
         function setupPagination(type, items) {
             const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
             
-            if (totalPages <= 1) {
-                // No need for pagination
-                return;
-            }
-            
             const paginationElement = document.getElementById(`${type}Pagination`);
             const bottomPaginationElement = document.getElementById(`${type}PaginationBottom`);
             
-            paginationElement.innerHTML = createPaginationHTML(type, totalPages);
-            bottomPaginationElement.innerHTML = createPaginationHTML(type, totalPages);
+            if (totalPages <= 1) {
+                // Clear pagination HTML if not needed
+                if (paginationElement) paginationElement.innerHTML = '';
+                if (bottomPaginationElement) bottomPaginationElement.innerHTML = '';
+                return;
+            }
+            
+            if (paginationElement) paginationElement.innerHTML = createPaginationHTML(type, totalPages);
+            if (bottomPaginationElement) bottomPaginationElement.innerHTML = createPaginationHTML(type, totalPages);
         }
         
         function createPaginationHTML(type, totalPages) {
@@ -455,6 +515,8 @@
             const start = (currentPage[type] - 1) * ITEMS_PER_PAGE;
             const end = start + ITEMS_PER_PAGE;
             
+            console.log(`DEBUG updateVisibility: type=${type}, cards found=${cards.length}, currentPage=${currentPage[type]}, start=${start}, end=${end}`);
+            
             let visibleCount = 0;
             
             cards.forEach((card, index) => {
@@ -474,6 +536,8 @@
                     card.style.display = 'none';
                 }
             });
+            
+            console.log(`DEBUG updateVisibility: visibleCount=${visibleCount} for type=${type}`);
         }
         
         function filterCards(type, searchText) {

@@ -1,7 +1,0 @@
-README.md
-pyproject.toml
-anki_diff_tool.egg-info/PKG-INFO
-anki_diff_tool.egg-info/SOURCES.txt
-anki_diff_tool.egg-info/dependency_links.txt
-anki_diff_tool.egg-info/requires.txt
-anki_diff_tool.egg-info/top_level.txt

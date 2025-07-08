@@ -1,17 +1,27 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "anki-diff-tool"
 version = "0.1.0"
 description = "Tool for comparing and merging Anki export files"
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 dependencies = [
     "flask",
+    "requests>=2.32.4",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
 ]
+
+[project.scripts]
+anki-diff = "anki_differ.cli.diff:cli_main"
+anki-merge = "anki_differ.cli.merge:cli_main"
+anki-selective = "anki_differ.cli.selective:cli_main"
+anki-web = "anki_differ.cli.web:cli_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/anki_differ"]

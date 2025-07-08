@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test JS Issue</title>
+</head>
+<body>
+    <h1>Test JavaScript Data Issue</h1>
+    
+    <div id="results"></div>
+    
+    <script>
+        // Simulate the exact data structure from our backend
+        const backendData = {
+            "headers": { "separator": "tab", "html": "true" },
+            "identical_cards": [
+                { "question": "Test Q1", "answer": "Test A1", "selected": "file1" },
+                { "question": "Test Q2", "answer": "Test A2", "selected": "file1" }
+            ],
+            "different_cards": [
+                { "question": "Diff Q1", "file1_answer": "A1", "file2_answer": "A2", "selected": "file1" }
+            ],
+            "unique_file1": [
+                { "question": "Unique Q1", "answer": "Unique A1", "selected": true }
+            ],
+            "unique_file2": [
+                { "question": "Unique Q2", "answer": "Unique A2", "selected": true }
+            ],
+            "stats": { "identical": 2, "different": 1, "only_file1": 1, "only_file2": 1 },
+            "file1_name": "Test File 1",
+            "file2_name": "Test File 2"
+        };
+        
+        // Test our defensive logic
+        function testGetItems(data) {
+            function getItems(type) {
+                console.log(`getItems called for type: ${type}`);
+                let items;
+                switch(type) {
+                    case 'different': 
+                        items = data.different_cards || [];
+                        break;
+                    case 'identical': 
+                        items = data.identical_cards || [];
+                        break;
+                    case 'unique1': 
+                        items = data.unique_file1 || [];
+                        break;
+                    case 'unique2': 
+                        items = data.unique_file2 || [];
+                        break;
+                    default: 
+                        items = [];
+                }
+                console.log(`getItems returning ${items.length} items for ${type}`);
+                return items;
+            }
+            
+            console.log('=== TESTING getItems FUNCTION ===');
+            const different = getItems('different');
+            const identical = getItems('identical');
+            const unique1 = getItems('unique1');
+            const unique2 = getItems('unique2');
+            
+            return {
+                different: different.length,
+                identical: identical.length,
+                unique1: unique1.length,
+                unique2: unique2.length
+            };
+        }
+        
+        console.log('Backend data:', backendData);
+        const results = testGetItems(backendData);
+        console.log('getItems results:', results);
+        
+        document.getElementById('results').innerHTML = `
+            <h2>Test Results:</h2>
+            <p>Different cards: ${results.different}</p>
+            <p>Identical cards: ${results.identical}</p>
+            <p>Unique file1: ${results.unique1}</p>
+            <p>Unique file2: ${results.unique2}</p>
+            <p>All functions work: ${results.different > 0 && results.identical > 0 ? '✅' : '❌'}</p>
+        `;
+    </script>
+</body>
+</html>

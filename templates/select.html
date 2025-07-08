@@ -140,35 +140,12 @@
                 </div>
                 
                 <div id="differentCards">
-                    <div id="differentPagination" class="pagination"></div>
-                    
-                    {% for card in data.different_cards %}
-                    <div class="anki-card different-card" data-index="{{ loop.index0 }}">
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5>{{ data.file1_name }}</h5>
-                                <div class="anki-answer html-content {% if card.selected == 'file1' %}selected{% endif %}" data-source="file1">{{ card.file1_answer|safe }}</div>
-                            </div>
-                            <div class="col-md-6">
-                                <h5>{{ data.file2_name }}</h5>
-                                <div class="anki-answer html-content {% if card.selected == 'file2' %}selected{% endif %}" data-source="file2">{{ card.file2_answer|safe }}</div>
-                            </div>
+                    <div class="text-center mt-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="card-selector">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="select-{{ loop.index0 }}" id="select1-{{ loop.index0 }}" value="file1" {% if card.selected == 'file1' %}checked{% endif %}>
-                                <label class="form-check-label" for="select1-{{ loop.index0 }}">Use {{ data.file1_name }}</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="select-{{ loop.index0 }}" id="select2-{{ loop.index0 }}" value="file2" {% if card.selected == 'file2' %}checked{% endif %}>
-                                <label class="form-check-label" for="select2-{{ loop.index0 }}">Use {{ data.file2_name }}</label>
-                            </div>
-                        </div>
+                        <p class="mt-2">Loading cards...</p>
                     </div>
-                    {% endfor %}
-                    
-                    <div id="differentPaginationBottom" class="pagination"></div>
                 </div>
             </div>
             
@@ -179,18 +156,15 @@
                 </div>
                 
                 <div id="identicalCards">
-                    <div id="identicalPagination" class="pagination"></div>
-                    
-                    {% for card in data.identical_cards %}
-                    <div class="anki-card identical-card">
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                    <div class="text-center mt-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading cards...</p>
                     </div>
-                    {% endfor %}
-                    
-                    <div id="identicalPaginationBottom" class="pagination"></div>
                 </div>
             </div>
+            
             <!-- Unique cards in File 1 tab -->
             <div class="tab-pane fade" id="unique1" role="tabpanel" aria-labelledby="unique1-tab">
                 <div class="search-box">
@@ -203,20 +177,12 @@
                 </div>
                 
                 <div id="unique1Cards">
-                    <div id="unique1Pagination" class="pagination"></div>
-                    
-                    {% for card in data.unique_file1 %}
-                    <div class="anki-card unique-card unique1-card" data-index="{{ loop.index0 }}">
-                        <div class="form-check">
-                            <input class="form-check-input unique1-checkbox" type="checkbox" id="unique1-{{ loop.index0 }}" data-index="{{ loop.index0 }}" {% if card.selected %}checked{% endif %}>
-                            <label class="form-check-label" for="unique1-{{ loop.index0 }}">Include this card</label>
+                    <div class="text-center mt-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                        <p class="mt-2">Loading cards...</p>
                     </div>
-                    {% endfor %}
-                    
-                    <div id="unique1PaginationBottom" class="pagination"></div>
                 </div>
             </div>
             
@@ -232,20 +198,12 @@
                 </div>
                 
                 <div id="unique2Cards">
-                    <div id="unique2Pagination" class="pagination"></div>
-                    
-                    {% for card in data.unique_file2 %}
-                    <div class="anki-card unique-card unique2-card" data-index="{{ loop.index0 }}">
-                        <div class="form-check">
-                            <input class="form-check-input unique2-checkbox" type="checkbox" id="unique2-{{ loop.index0 }}" data-index="{{ loop.index0 }}" {% if card.selected %}checked{% endif %}>
-                            <label class="form-check-label" for="unique2-{{ loop.index0 }}">Include this card</label>
+                    <div class="text-center mt-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <div class="anki-question html-content">{{ card.question|safe }}</div>
-                        <div class="anki-answer html-content">{{ card.answer|safe }}</div>
+                        <p class="mt-2">Loading cards...</p>
                     </div>
-                    {% endfor %}
-                    
-                    <div id="unique2PaginationBottom" class="pagination"></div>
                 </div>
             </div>
         </div>
@@ -268,44 +226,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Initialize pagination
-        const ITEMS_PER_PAGE = 10;
-        let currentPage = {
-            'different': 1,
-            'identical': 1,
-            'unique1': 1,
-            'unique2': 1
-        };
+        // Global data object to hold all card data
+        let data = {{ data|tojson|safe }};
         
-        // Get data from template
-        const data = {{ data|tojson|safe }};
+        // Track which tabs have been loaded
+        let loadedTabs = new Set();
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Debug: Check what data we have
-            console.log('DEBUG: Initial data check:');
-            console.log(`- different_cards: ${data.different_cards ? data.different_cards.length : 'undefined'}`);
-            console.log(`- identical_cards: ${data.identical_cards ? data.identical_cards.length : 'undefined'}`);
-            console.log(`- unique_file1: ${data.unique_file1 ? data.unique_file1.length : 'undefined'}`);
-            console.log(`- unique_file2: ${data.unique_file2 ? data.unique_file2.length : 'undefined'}`);
+            console.log('Page loaded with data:', data);
             
-            // Debug: Check DOM elements
-            console.log('DEBUG: DOM elements check:');
-            console.log(`- different-card elements: ${document.querySelectorAll('.different-card').length}`);
-            console.log(`- identical-card elements: ${document.querySelectorAll('.identical-card').length}`);
-            console.log(`- unique1-card elements: ${document.querySelectorAll('.unique1-card').length}`);
-            console.log(`- unique2-card elements: ${document.querySelectorAll('.unique2-card').length}`);
+            // Load the initial tab (different cards)
+            loadTabContent('different');
             
-            // Set up pagination for all tabs
-            setupPagination('different', data.different_cards);
-            setupPagination('identical', data.identical_cards);
-            setupPagination('unique1', data.unique_file1);
-            setupPagination('unique2', data.unique_file2);
-            
-            // Update visibility only for the active tab initially (different)
-            updateVisibility('different');
-            
-            // Set up tab switching to update visibility when tabs become active
+            // Set up tab switching
             document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
                 tab.addEventListener('shown.bs.tab', function(event) {
                     const target = event.target.getAttribute('data-bs-target');
@@ -315,23 +249,10 @@
                     else if (target === '#unique1') tabType = 'unique1';
                     else if (target === '#unique2') tabType = 'unique2';
                     
-                    console.log(`DEBUG: Tab switched to ${target}, tabType=${tabType}`);
+                    console.log(`Tab switched to ${target}, loading ${tabType}`);
                     
                     if (tabType) {
-                        // Check if cards exist in the DOM
-                        const cards = document.querySelectorAll(`.${tabType}-card`);
-                        console.log(`DEBUG: Found ${cards.length} cards for ${tabType}`);
-                        
-                        // Check data object
-                        let dataArray = [];
-                        if (tabType === 'different') dataArray = data.different_cards;
-                        else if (tabType === 'identical') dataArray = data.identical_cards;
-                        else if (tabType === 'unique1') dataArray = data.unique_file1;
-                        else if (tabType === 'unique2') dataArray = data.unique_file2;
-                        
-                        console.log(`DEBUG: Data array for ${tabType} has ${dataArray.length} items`);
-                        
-                        updateVisibility(tabType);
+                        loadTabContent(tabType);
                     }
                 });
             });
@@ -351,51 +272,6 @@
             
             document.getElementById('unique2Search').addEventListener('input', function() {
                 filterCards('unique2', this.value);
-            });
-            
-            // Set up card selection
-            setupCardSelection();
-            
-            // Set up "include all" toggles
-            document.getElementById('includeAllFile1').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.unique1-checkbox');
-                checkboxes.forEach(cb => {
-                    cb.checked = this.checked;
-                    const idx = parseInt(cb.getAttribute('data-index'));
-                    data.unique_file1[idx].selected = this.checked;
-                });
-            });
-            
-            document.getElementById('includeAllFile2').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.unique2-checkbox');
-                checkboxes.forEach(cb => {
-                    cb.checked = this.checked;
-                    const idx = parseInt(cb.getAttribute('data-index'));
-                    data.unique_file2[idx].selected = this.checked;
-                });
-            });
-            
-            // Set up individual checkboxes
-            document.querySelectorAll('.unique1-checkbox').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const idx = parseInt(this.getAttribute('data-index'));
-                    data.unique_file1[idx].selected = this.checked;
-                });
-            });
-            
-            document.querySelectorAll('.unique2-checkbox').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const idx = parseInt(this.getAttribute('data-index'));
-                    data.unique_file2[idx].selected = this.checked;
-                });
-            });
-            
-            // Set up tab change
-            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function(event) {
-                    const target = event.target.getAttribute('data-bs-target').substring(1);
-                    updateVisibility(target);
-                });
             });
             
             // Set up save button
@@ -418,126 +294,219 @@
                     window.location.href = '/reset';
                 }
             });
-        });
-        
-        function setupCardSelection() {
-            // Set up radio buttons for different cards
-            document.querySelectorAll('.different-card').forEach(card => {
-                const idx = parseInt(card.getAttribute('data-index'));
-                const radioButtons = card.querySelectorAll('input[type="radio"]');
-                
-                radioButtons.forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        data.different_cards[idx].selected = this.value;
-                        
-                        // Update visual indicator
-                        card.querySelectorAll('.anki-answer').forEach(answer => {
-                            if (answer.getAttribute('data-source') === this.value) {
-                                answer.classList.add('selected');
-                            } else {
-                                answer.classList.remove('selected');
-                            }
-                        });
+            
+            // Set up "include all" toggles (these work across all tabs)
+            document.getElementById('includeAllFile1').addEventListener('change', function() {
+                if (data.unique_file1) {
+                    const checkboxes = document.querySelectorAll('.unique1-checkbox');
+                    checkboxes.forEach(cb => {
+                        cb.checked = this.checked;
+                        const idx = parseInt(cb.getAttribute('data-index'));
+                        if (data.unique_file1[idx]) {
+                            data.unique_file1[idx].selected = this.checked;
+                        }
                     });
-                });
-            });
-        }
-        
-        function setupPagination(type, items) {
-            const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-            
-            const paginationElement = document.getElementById(`${type}Pagination`);
-            const bottomPaginationElement = document.getElementById(`${type}PaginationBottom`);
-            
-            if (totalPages <= 1) {
-                // Clear pagination HTML if not needed
-                if (paginationElement) paginationElement.innerHTML = '';
-                if (bottomPaginationElement) bottomPaginationElement.innerHTML = '';
-                return;
-            }
-            
-            if (paginationElement) paginationElement.innerHTML = createPaginationHTML(type, totalPages);
-            if (bottomPaginationElement) bottomPaginationElement.innerHTML = createPaginationHTML(type, totalPages);
-        }
-        
-        function createPaginationHTML(type, totalPages) {
-            let html = `<nav><ul class="pagination">`;
-            
-            // Previous button
-            html += `<li class="page-item ${currentPage[type] === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage('${type}', ${currentPage[type] - 1}); return false;">Previous</a>
-            </li>`;
-            
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<li class="page-item ${currentPage[type] === i ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="changePage('${type}', ${i}); return false;">${i}</a>
-                </li>`;
-            }
-            
-            // Next button
-            html += `<li class="page-item ${currentPage[type] === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="changePage('${type}', ${currentPage[type] + 1}); return false;">Next</a>
-            </li>`;
-            
-            html += `</ul></nav>`;
-            
-            return html;
-        }
-        
-        function changePage(type, page) {
-            const items = getItems(type);
-            const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-            
-            if (page < 1 || page > totalPages) {
-                return;
-            }
-            
-            currentPage[type] = page;
-            updateVisibility(type);
-            
-            // Update pagination
-            setupPagination(type, items);
-        }
-        
-        function getItems(type) {
-            switch(type) {
-                case 'different': return data.different_cards;
-                case 'identical': return data.identical_cards;
-                case 'unique1': return data.unique_file1;
-                case 'unique2': return data.unique_file2;
-                default: return [];
-            }
-        }
-        
-        function updateVisibility(type) {
-            const cards = document.querySelectorAll(`.${type}-card`);
-            const start = (currentPage[type] - 1) * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            
-            console.log(`DEBUG updateVisibility: type=${type}, cards found=${cards.length}, currentPage=${currentPage[type]}, start=${start}, end=${end}`);
-            
-            let visibleCount = 0;
-            
-            cards.forEach((card, index) => {
-                // Check if the card matches the current filter (search)
-                const isVisible = !card.classList.contains('filtered-out');
-                
-                if (isVisible) {
-                    visibleCount++;
-                    
-                    // Check if the card is on the current page
-                    if (visibleCount > start && visibleCount <= end) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                } else {
-                    card.style.display = 'none';
                 }
             });
             
-            console.log(`DEBUG updateVisibility: visibleCount=${visibleCount} for type=${type}`);
+            document.getElementById('includeAllFile2').addEventListener('change', function() {
+                if (data.unique_file2) {
+                    const checkboxes = document.querySelectorAll('.unique2-checkbox');
+                    checkboxes.forEach(cb => {
+                        cb.checked = this.checked;
+                        const idx = parseInt(cb.getAttribute('data-index'));
+                        if (data.unique_file2[idx]) {
+                            data.unique_file2[idx].selected = this.checked;
+                        }
+                    });
+                }
+            });
+        });
+        
+        function loadTabContent(tabType) {
+            // Skip if already loaded
+            if (loadedTabs.has(tabType)) {
+                console.log(`Tab ${tabType} already loaded, skipping`);
+                return;
+            }
+            
+            console.log(`Loading tab content for ${tabType}`);
+            
+            // Show loading spinner
+            const container = document.getElementById(`${tabType}Cards`);
+            container.innerHTML = `
+                <div class="text-center mt-4">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading ${tabType} cards...</p>
+                </div>
+            `;
+            
+            // Fetch data from API
+            fetch(`/api/cards/${tabType}`)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(`API response for ${tabType}:`, result);
+                    
+                    if (result.success) {
+                        // Store the data
+                        const dataKey = getDataKey(tabType);
+                        data[dataKey] = result.cards;
+                        
+                        // Render the cards
+                        renderCards(tabType, result.cards, result.file1_name, result.file2_name);
+                        
+                        // Mark as loaded
+                        loadedTabs.add(tabType);
+                        
+                        // Set up event listeners for this tab
+                        setupTabEventListeners(tabType);
+                    } else {
+                        container.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h4>Error loading cards</h4>
+                                <p>${result.error}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error loading ${tabType}:`, error);
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h4>Error loading cards</h4>
+                            <p>Failed to load ${tabType} cards: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        function getDataKey(tabType) {
+            const mapping = {
+                'different': 'different_cards',
+                'identical': 'identical_cards',
+                'unique1': 'unique_file1',
+                'unique2': 'unique_file2'
+            };
+            return mapping[tabType];
+        }
+        
+        function renderCards(tabType, cards, file1Name, file2Name) {
+            const container = document.getElementById(`${tabType}Cards`);
+            
+            if (cards.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center mt-4">
+                        <h4>No ${tabType} cards found</h4>
+                        <p>There are no cards in this category.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            if (tabType === 'different') {
+                html = renderDifferentCards(cards, file1Name, file2Name);
+            } else if (tabType === 'identical') {
+                html = renderIdenticalCards(cards);
+            } else if (tabType === 'unique1' || tabType === 'unique2') {
+                html = renderUniqueCards(cards, tabType);
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function renderDifferentCards(cards, file1Name, file2Name) {
+            return cards.map((card, index) => `
+                <div class="anki-card different-card" data-index="${index}">
+                    <div class="anki-question html-content">${card.question}</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>${file1Name}</h5>
+                            <div class="anki-answer html-content ${card.selected === 'file1' ? 'selected' : ''}" data-source="file1">${card.file1_answer}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>${file2Name}</h5>
+                            <div class="anki-answer html-content ${card.selected === 'file2' ? 'selected' : ''}" data-source="file2">${card.file2_answer}</div>
+                        </div>
+                    </div>
+                    <div class="card-selector">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="select-${index}" id="select1-${index}" value="file1" ${card.selected === 'file1' ? 'checked' : ''}>
+                            <label class="form-check-label" for="select1-${index}">Use ${file1Name}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="select-${index}" id="select2-${index}" value="file2" ${card.selected === 'file2' ? 'checked' : ''}>
+                            <label class="form-check-label" for="select2-${index}">Use ${file2Name}</label>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderIdenticalCards(cards) {
+            return cards.map((card, index) => `
+                <div class="anki-card identical-card" data-index="${index}">
+                    <div class="anki-question html-content">${card.question}</div>
+                    <div class="anki-answer html-content">${card.answer}</div>
+                </div>
+            `).join('');
+        }
+        
+        function renderUniqueCards(cards, tabType) {
+            return cards.map((card, index) => `
+                <div class="anki-card unique-card ${tabType}-card" data-index="${index}">
+                    <div class="form-check">
+                        <input class="form-check-input ${tabType}-checkbox" type="checkbox" id="${tabType}-${index}" data-index="${index}" ${card.selected ? 'checked' : ''}>
+                        <label class="form-check-label" for="${tabType}-${index}">Include this card</label>
+                    </div>
+                    <div class="anki-question html-content">${card.question}</div>
+                    <div class="anki-answer html-content">${card.answer}</div>
+                </div>
+            `).join('');
+        }
+        
+        function setupTabEventListeners(tabType) {
+            if (tabType === 'different') {
+                // Set up radio buttons for different cards
+                document.querySelectorAll('.different-card').forEach(card => {
+                    const idx = parseInt(card.getAttribute('data-index'));
+                    const radioButtons = card.querySelectorAll('input[type="radio"]');
+                    
+                    radioButtons.forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            data.different_cards[idx].selected = this.value;
+                            
+                            // Update visual indicator
+                            card.querySelectorAll('.anki-answer').forEach(answer => {
+                                if (answer.getAttribute('data-source') === this.value) {
+                                    answer.classList.add('selected');
+                                } else {
+                                    answer.classList.remove('selected');
+                                }
+                            });
+                        });
+                    });
+                });
+            } else if (tabType === 'unique1') {
+                // Set up individual checkboxes first
+                document.querySelectorAll('.unique1-checkbox').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const idx = parseInt(this.getAttribute('data-index'));
+                        data.unique_file1[idx].selected = this.checked;
+                    });
+                });
+            } else if (tabType === 'unique2') {
+                // Set up individual checkboxes first
+                document.querySelectorAll('.unique2-checkbox').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const idx = parseInt(this.getAttribute('data-index'));
+                        data.unique_file2[idx].selected = this.checked;
+                    });
+                });
+            }
         }
         
         function filterCards(type, searchText) {
@@ -561,16 +530,11 @@
                 }
                 
                 if (isMatch) {
-                    card.classList.remove('filtered-out');
+                    card.style.display = '';
                 } else {
-                    card.classList.add('filtered-out');
+                    card.style.display = 'none';
                 }
             });
-            
-            // Reset to first page and update visibility
-            currentPage[type] = 1;
-            updateVisibility(type);
-            setupPagination(type, getItems(type));
         }
         
         function saveSelections() {

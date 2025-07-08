@@ -9055,6 +9055,6 @@
   },
   "file1_name": "macOS Export",
   "file2_name": "Android Export",
-  "file1_path": "/Users/luketych/Dev/_productivity/anki-diff_between_backups/src/uploads/anki-export-macos.txt",
-  "file2_path": "/Users/luketych/Dev/_productivity/anki-diff_between_backups/src/uploads/anki-export-android.txt"
+  "file1_path": "/Users/luketych/Dev/_productivity/anki_differ/src/anki_differ/web/../../../src/uploads/All_Decks.txt",
+  "file2_path": "/Users/luketych/Dev/_productivity/anki_differ/src/anki_differ/web/../../../src/uploads/All_decks-20250630172449.txt"
 }
