@@ -15,9 +15,11 @@ from unittest.mock import patch, mock_open
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from src.web_app import (
+from src.anki_differ.core.diff import (
     load_anki_export, 
-    parse_anki_export, 
+    parse_anki_export
+)
+from src.anki_differ.web.app import (
     compare_exports, 
     generate_anki_export
 )

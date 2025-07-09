@@ -8,6 +8,10 @@ from flask import Flask, render_template, request, jsonify, send_file, redirect,
 from werkzeug.utils import secure_filename
 import tempfile
 
+# Import the new Card class and related functions
+from ..core.card import Card, convert_web_card_to_card, convert_card_to_web_card
+from ..core.diff import load_anki_export, parse_anki_export_cards
+
 app = Flask(__name__, template_folder="../../../templates")
 app.config['SECRET_KEY'] = 'anki-diff-tool-secret-key'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../src/uploads')
@@ -19,47 +23,7 @@ for folder in [app.config['UPLOAD_FOLDER'], app.config['DATA_FOLDER']]:
         os.makedirs(folder)
 
 
-def load_anki_export(file_path: str) -> List[str]:
-    """Load an Anki export file and return its lines."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return f.readlines()
-
-
-def parse_anki_export(lines: List[str]) -> Tuple[Dict[str, str], List[Tuple[str, str]]]:
-    """Parse an Anki export into headers and card content."""
-    headers = {}
-    cards = []
-    
-    # Track multi-line content in case of malformed input
-    current_line = ""
-    
-    for i, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            continue
-            
-        if line.startswith('#'):
-            # Parse header line
-            key, value = line[1:].split(':', 1)
-            headers[key] = value
-        elif '\t' in line:
-            # This is a complete card with tab separator
-            question, answer = line.split('\t', 1)
-            cards.append((question, answer))
-            current_line = ""
-        elif current_line:
-            # This appears to be a continuation of a malformed line
-            current_line += "\n" + line
-            # Check if it now contains a tab
-            if '\t' in current_line:
-                question, answer = current_line.split('\t', 1)
-                cards.append((question, answer))
-                current_line = ""
-        else:
-            # This might be a malformed line that continues on next line
-            current_line = line
-            
-    return headers, cards
+# These functions are now imported from diff.py - no need to duplicate them
 
 
 def compare_exports(file1_path: str, file2_path: str) -> Dict:
@@ -68,12 +32,12 @@ def compare_exports(file1_path: str, file2_path: str) -> Dict:
     lines1 = load_anki_export(file1_path)
     lines2 = load_anki_export(file2_path)
     
-    headers1, cards1 = parse_anki_export(lines1)
-    headers2, cards2 = parse_anki_export(lines2)
+    headers1, cards1 = parse_anki_export_cards(lines1)
+    headers2, cards2 = parse_anki_export_cards(lines2)
     
     # Create dictionaries for faster lookup
-    cards1_dict = {q: a for q, a in cards1}
-    cards2_dict = {q: a for q, a in cards2}
+    cards1_dict = {card.question: card for card in cards1}
+    cards2_dict = {card.question: card for card in cards2}
     
     # Find common questions, unique questions, and differences
     common_questions = set(cards1_dict.keys()) & set(cards2_dict.keys())
@@ -85,30 +49,33 @@ def compare_exports(file1_path: str, file2_path: str) -> Dict:
     different_cards = []
     
     for q in common_questions:
-        if cards1_dict[q] == cards2_dict[q]:
+        card1 = cards1_dict[q]
+        card2 = cards2_dict[q]
+        
+        if card1.answer == card2.answer:
             identical_cards.append({
                 "question": q,
-                "answer": cards1_dict[q],
+                "answer": card1.answer,
                 "selected": "file1"  # Default to file1 for identical cards
             })
         else:
             different_cards.append({
                 "question": q,
-                "file1_answer": cards1_dict[q],
-                "file2_answer": cards2_dict[q],
+                "file1_answer": card1.answer,
+                "file2_answer": card2.answer,
                 "selected": "file1"  # Default to file1
             })
     
     # Prepare unique cards
     unique_file1 = [{
         "question": q,
-        "answer": cards1_dict[q],
+        "answer": cards1_dict[q].answer,
         "selected": True  # Default to include
     } for q in only_in_1]
     
     unique_file2 = [{
         "question": q,
-        "answer": cards2_dict[q],
+        "answer": cards2_dict[q].answer,
         "selected": True  # Default to include
     } for q in only_in_2]
     

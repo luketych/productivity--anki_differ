@@ -4,7 +4,10 @@ import sys
 import difflib
 import re
 import os
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Tuple, Set, Union, Optional
+
+# Import the new Card class
+from .card import Card, SimilarityMetadata, SimilarityStatus, cards_to_tuples, tuples_to_cards
 
 
 def load_anki_export(file_path: str) -> List[str]:
@@ -14,7 +17,13 @@ def load_anki_export(file_path: str) -> List[str]:
 
 
 def parse_anki_export(lines: List[str]) -> Tuple[Dict[str, str], List[Tuple[str, str]]]:
-    """Parse an Anki export into headers and card content."""
+    """Parse an Anki export into headers and card content (legacy tuple format)."""
+    headers, cards = parse_anki_export_cards(lines)
+    return headers, cards_to_tuples(cards)
+
+
+def parse_anki_export_cards(lines: List[str]) -> Tuple[Dict[str, str], List[Card]]:
+    """Parse an Anki export into headers and Card objects."""
     headers = {}
     cards = []
     
@@ -31,7 +40,7 @@ def parse_anki_export(lines: List[str]) -> Tuple[Dict[str, str], List[Tuple[str,
             # Parse card content
             if '\t' in line:
                 question, answer = line.split('\t', 1)
-                cards.append((question, answer))
+                cards.append(Card(question=question, answer=answer))
             else:
                 print(f"Warning: Line {i+1} doesn't contain a tab separator: {line}")
                 
@@ -39,35 +48,60 @@ def parse_anki_export(lines: List[str]) -> Tuple[Dict[str, str], List[Tuple[str,
 
 
 def find_missing_cards(cards1: List[Tuple[str, str]], cards2: List[Tuple[str, str]]) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
-    """Find cards that are in one set but not the other."""
-    set1 = set((q, a) for q, a in cards1)
-    set2 = set((q, a) for q, a in cards2)
+    """Find cards that are in one set but not the other (legacy tuple format)."""
+    cards1_objects = tuples_to_cards(cards1)
+    cards2_objects = tuples_to_cards(cards2)
     
-    missing_in_2 = [card for card in cards1 if card not in set2]
-    missing_in_1 = [card for card in cards2 if card not in set1]
+    missing_in_1, missing_in_2 = find_missing_cards_objects(cards1_objects, cards2_objects)
+    
+    return cards_to_tuples(missing_in_1), cards_to_tuples(missing_in_2)
+
+
+def find_missing_cards_objects(cards1: List[Card], cards2: List[Card]) -> Tuple[List[Card], List[Card]]:
+    """Find cards that are in one set but not the other."""
+    set1 = set(card.to_tuple() for card in cards1)
+    set2 = set(card.to_tuple() for card in cards2)
+    
+    missing_in_2 = [card for card in cards1 if card.to_tuple() not in set2]
+    missing_in_1 = [card for card in cards2 if card.to_tuple() not in set1]
     
     return missing_in_1, missing_in_2
 
 
 def find_content_differences(cards1: List[Tuple[str, str]], cards2: List[Tuple[str, str]]) -> List[Tuple[int, Tuple[str, str], Tuple[str, str]]]:
+    """Find differences in shared cards (legacy tuple format)."""
+    cards1_objects = tuples_to_cards(cards1)
+    cards2_objects = tuples_to_cards(cards2)
+    
+    differences = find_content_differences_objects(cards1_objects, cards2_objects)
+    
+    # Convert back to legacy format
+    result = []
+    for idx, card1, card2 in differences:
+        result.append((idx, card1.to_tuple(), card2.to_tuple()))
+    
+    return result
+
+
+def find_content_differences_objects(cards1: List[Card], cards2: List[Card]) -> List[Tuple[int, Card, Card]]:
     """Find differences in shared cards."""
     differences = []
     
     # Create dictionaries with question as key for faster lookup
-    cards1_dict = {q: a for q, a in cards1}
-    cards2_dict = {q: a for q, a in cards2}
+    cards1_dict = {card.question: card for card in cards1}
+    cards2_dict = {card.question: card for card in cards2}
     
     # Find shared questions with different answers
     common_questions = set(cards1_dict.keys()) & set(cards2_dict.keys())
     
-    for i, q in enumerate(common_questions):
-        a1 = cards1_dict[q]
-        a2 = cards2_dict[q]
+    for q in common_questions:
+        card1 = cards1_dict[q]
+        card2 = cards2_dict[q]
         
-        if a1 != a2:
+        if card1.answer != card2.answer:
             # Find the index in the original lists
-            idx1 = next(i for i, (q1, _) in enumerate(cards1) if q1 == q)
-            differences.append((idx1, (q, a1), (q, a2)))
+            idx1 = next(i for i, card in enumerate(cards1) if card.question == q)
+            differences.append((idx1, card1, card2))
     
     return differences
 

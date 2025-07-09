@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(project_root, 'src'))
 
 # Import after path setup
 from tests.fixtures.test_data_factory import TestDataFactory, TestFixtures
-from src.web_app import app
+from src.anki_differ.web.app import app
 
 def pytest_configure(config):
     """Configure pytest with custom markers"""

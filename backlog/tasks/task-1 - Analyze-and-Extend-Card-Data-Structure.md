@@ -1,7 +1,7 @@
 ---
 id: task-1
 title: Analyze and Extend Card Data Structure
-status: To Do
+status: Completed
 assignee: []
 created_date: '2025-07-08'
 updated_date: '2025-07-08'
@@ -19,11 +19,19 @@ Analyze the current Card data structure and extend it to support additional meta
 - Ensure backward compatibility
 
 ## Sub-tasks
-- [ ] Analyze current Card implementation in `src/anki_differ/core/`
-- [ ] Identify required metadata fields (similarity_score, match_status, etc.)
-- [ ] Design Card structure extension
-- [ ] Update Card class/structure with new fields
-- [ ] Verify no breaking changes to existing functionality
+- [x] Analyze current Card implementation in `src/anki_differ/core/`
+- [x] Identify required metadata fields (similarity_score, match_status, etc.)
+- [x] Design Card structure extension
+- [x] Update Card class/structure with new fields
+- [x] Verify no breaking changes to existing functionality
+
+## Implementation Summary
+- Created new `Card` class in `src/anki_differ/core/card.py` with similarity metadata support
+- Added `SimilarityMetadata` class with fields: similarity_score, match_id, status, algorithm_data
+- Maintained backward compatibility with existing tuple-based functions
+- Updated core modules (diff.py, merge.py, selective.py, web/app.py) to use new Card class
+- Added comprehensive documentation and usage examples
+- All 21 unit tests pass, confirming no breaking changes
 
 ## Dependencies
 - None (foundation task)

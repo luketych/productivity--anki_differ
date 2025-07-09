@@ -5,48 +5,8 @@ import sys
 import argparse
 from typing import Dict, List, Tuple, Set
 
-
-def load_anki_export(file_path: str) -> List[str]:
-    """Load an Anki export file and return its lines."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return f.readlines()
-
-
-def parse_anki_export(lines: List[str]) -> Tuple[Dict[str, str], List[Tuple[str, str]]]:
-    """Parse an Anki export into headers and card content."""
-    headers = {}
-    cards = []
-    
-    # Track multi-line content in case of malformed input
-    current_line = ""
-    
-    for i, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            continue
-            
-        if line.startswith('#'):
-            # Parse header line
-            key, value = line[1:].split(':', 1)
-            headers[key] = value
-        elif '\t' in line:
-            # This is a complete card with tab separator
-            question, answer = line.split('\t', 1)
-            cards.append((question, answer))
-            current_line = ""
-        elif current_line:
-            # This appears to be a continuation of a malformed line
-            current_line += "\n" + line
-            # Check if it now contains a tab
-            if '\t' in current_line:
-                question, answer = current_line.split('\t', 1)
-                cards.append((question, answer))
-                current_line = ""
-        else:
-            # This might be a malformed line that continues on next line
-            current_line = line
-            
-    return headers, cards
+# Import functions from diff.py to avoid code duplication
+from .diff import load_anki_export, parse_anki_export
 
 
 def extract_overlapping_cards(file1: str, file2: str) -> Tuple[Dict[str, str], Dict[str, str], Set[str]]:
