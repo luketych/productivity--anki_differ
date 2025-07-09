@@ -12,8 +12,11 @@ import difflib
 import json
 import math
 from collections import Counter
+from functools import lru_cache
+import time
 
 from .card import Card
+from .text_processing import TextProcessor, ContentType, preprocess_card_text
 
 
 class MatchType(Enum):
@@ -45,6 +48,10 @@ class SimilarityConfig:
     case_sensitive: bool = False        # Whether to consider case
     ignore_html: bool = True           # Whether to strip HTML tags
     ignore_punctuation: bool = True     # Whether to ignore punctuation
+    normalize_whitespace: bool = True   # Whether to normalize whitespace
+    decode_html_entities: bool = True   # Whether to decode HTML entities
+    enable_caching: bool = True         # Whether to enable similarity caching
+    early_stop_threshold: float = 0.1   # Early stop if similarity is below this
     
     def __post_init__(self):
         """Validate configuration values"""
@@ -162,51 +169,85 @@ class SimilarityCalculator:
             SimilarityAlgorithm.LEVENSHTEIN: self._levenshtein_similarity,
             SimilarityAlgorithm.COMBINED: self._combined_similarity
         }
+        # Initialize text processor with configuration
+        self._text_processor = TextProcessor(
+            case_sensitive=self.config.case_sensitive,
+            ignore_html=self.config.ignore_html,
+            ignore_punctuation=self.config.ignore_punctuation,
+            normalize_whitespace=self.config.normalize_whitespace,
+            decode_html_entities=self.config.decode_html_entities
+        )
+        # Cache for similarity calculations
+        self._similarity_cache = {} if self.config.enable_caching else None
     
     def calculate_similarity(self, card1: Card, card2: Card) -> SimilarityResult:
         """Calculate similarity between two cards"""
-        # Preprocess text
-        q1 = self._preprocess_text(card1.question)
-        a1 = self._preprocess_text(card1.answer)
-        q2 = self._preprocess_text(card2.question)
-        a2 = self._preprocess_text(card2.answer)
+        # Check cache first
+        if self._similarity_cache is not None:
+            cache_key = (card1.to_tuple(), card2.to_tuple(), self.config.algorithm.value)
+            if cache_key in self._similarity_cache:
+                return self._similarity_cache[cache_key]
+        
+        # Preprocess text using the text processor
+        q1 = self._text_processor.process_text(card1.question, ContentType.MIXED)
+        a1 = self._text_processor.process_text(card1.answer, ContentType.MIXED)
+        q2 = self._text_processor.process_text(card2.question, ContentType.MIXED)
+        a2 = self._text_processor.process_text(card2.answer, ContentType.MIXED)
         
         # Calculate similarities using selected algorithm
         algorithm_func = self._algorithm_map[self.config.algorithm]
         question_sim = algorithm_func(q1, q2)
-        answer_sim = algorithm_func(a1, a2)
         
-        # Calculate overall similarity
-        overall_sim = (question_sim * self.config.question_weight + 
-                      answer_sim * self.config.answer_weight)
-        
-        # Determine match type
-        match_type = self._determine_match_type(overall_sim)
-        
-        # Calculate confidence
-        confidence = self._calculate_confidence(question_sim, answer_sim, overall_sim)
-        
-        # Create algorithm data
-        algorithm_data = {
-            'algorithm': self.config.algorithm.value,
-            'question_processed': q1,
-            'answer_processed': a1,
-            'question_processed_2': q2,
-            'answer_processed_2': a2,
-            'weights': {
-                'question': self.config.question_weight,
-                'answer': self.config.answer_weight
+        # Early stopping if question similarity is very low
+        if question_sim < self.config.early_stop_threshold:
+            result = SimilarityResult(
+                question_similarity=question_sim,
+                answer_similarity=0.0,
+                overall_similarity=question_sim * self.config.question_weight,
+                match_type=MatchType.DIFFERENT,
+                confidence=0.0,
+                algorithm_data={'algorithm': self.config.algorithm.value, 'early_stop': True}
+            )
+        else:
+            answer_sim = algorithm_func(a1, a2)
+            
+            # Calculate overall similarity
+            overall_sim = (question_sim * self.config.question_weight + 
+                          answer_sim * self.config.answer_weight)
+            
+            # Determine match type
+            match_type = self._determine_match_type(overall_sim)
+            
+            # Calculate confidence
+            confidence = self._calculate_confidence(question_sim, answer_sim, overall_sim)
+            
+            # Create algorithm data
+            algorithm_data = {
+                'algorithm': self.config.algorithm.value,
+                'question_processed': q1,
+                'answer_processed': a1,
+                'question_processed_2': q2,
+                'answer_processed_2': a2,
+                'weights': {
+                    'question': self.config.question_weight,
+                    'answer': self.config.answer_weight
+                }
             }
-        }
+            
+            result = SimilarityResult(
+                question_similarity=question_sim,
+                answer_similarity=answer_sim,
+                overall_similarity=overall_sim,
+                match_type=match_type,
+                confidence=confidence,
+                algorithm_data=algorithm_data
+            )
         
-        return SimilarityResult(
-            question_similarity=question_sim,
-            answer_similarity=answer_sim,
-            overall_similarity=overall_sim,
-            match_type=match_type,
-            confidence=confidence,
-            algorithm_data=algorithm_data
-        )
+        # Cache the result
+        if self._similarity_cache is not None:
+            self._similarity_cache[cache_key] = result
+        
+        return result
     
     def find_similar_pairs(self, cards1: List[Card], cards2: List[Card], 
                           min_similarity: float = 0.5) -> List[SimilarCardPair]:
@@ -224,29 +265,6 @@ class SimilarityCalculator:
         
         return pairs
     
-    def _preprocess_text(self, text: str) -> str:
-        """Preprocess text according to configuration"""
-        if not text:
-            return ""
-        
-        processed = text
-        
-        # Remove HTML tags if configured
-        if self.config.ignore_html:
-            processed = re.sub(r'<[^>]+>', '', processed)
-        
-        # Remove punctuation if configured
-        if self.config.ignore_punctuation:
-            processed = re.sub(r'[^\w\s]', '', processed)
-        
-        # Handle case sensitivity
-        if not self.config.case_sensitive:
-            processed = processed.lower()
-        
-        # Normalize whitespace
-        processed = ' '.join(processed.split())
-        
-        return processed
     
     def _determine_match_type(self, similarity: float) -> MatchType:
         """Determine match type based on similarity score"""
@@ -277,6 +295,23 @@ class SimilarityCalculator:
     
     def _sequence_matcher_similarity(self, text1: str, text2: str) -> float:
         """Calculate similarity using Python's difflib SequenceMatcher"""
+        # Quick check for identical strings
+        if text1 == text2:
+            return 1.0
+        
+        # Quick check for very different lengths
+        len1, len2 = len(text1), len(text2)
+        if len1 == 0 and len2 == 0:
+            return 1.0
+        if len1 == 0 or len2 == 0:
+            return 0.0
+        
+        # If lengths are very different, likely not similar
+        length_ratio = min(len1, len2) / max(len1, len2)
+        if length_ratio < 0.3:
+            return 0.0
+        
+        # Use SequenceMatcher for actual calculation
         return difflib.SequenceMatcher(None, text1, text2).ratio()
     
     def _jaccard_similarity(self, text1: str, text2: str) -> float:
