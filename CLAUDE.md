@@ -2,82 +2,68 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Running the Application
+## Project Overview
 
-### With uv (Recommended)
-```bash
-# Install the project in development mode
-uv sync --dev
+This is the Anki Export Comparison Tool (anki-diff-tool) - a Python package that helps compare, analyze, and merge Anki export files from different sources (macOS, Android, Anki Web). The tool provides both command-line interfaces and a web-based UI for interactive card comparison and selective merging.
 
-# Run the web interface
-uv run anki-web
+## Key Commands
 
-# Open browser to http://127.0.0.1:5001
-```
+### Development
+- **Install dependencies**: `pip install -e .` (installs in development mode)
+- **Run tests**: `pytest` (runs all tests in tests/ directory)
+- **Run specific test types**: 
+  - `pytest tests/unit/` (unit tests only)
+  - `pytest tests/integration/` (integration tests only)
+  - `pytest tests/e2e/` (end-to-end tests only)
+- **Run single test**: `pytest tests/unit/test_specific.py::test_function`
 
-### Command Line Tools (with uv)
-```bash
-# Basic comparison
-uv run anki-diff <file1> <file2>
+### CLI Usage
+- **Diff command**: `anki-diff <file1> <file2>`
+- **Merge command**: `anki-merge <file1> <file2> <output_file>`
+- **Selective merge**: `anki-selective extract-overlapping <file1> <file2> <output_file>`
+- **Web interface**: `anki-web` (starts Flask server on http://127.0.0.1:5000)
 
-# Merge with conflict resolution
-uv run anki-merge <file1> <file2> <output_file>
+### Legacy Commands (still functional)
+- **Basic comparison**: `python3 anki_diff.py <file1> <file2>`
+- **Merge exports**: `python3 merge_exports.py <file1> <file2> <output_file>`
+- **Web interface**: `python3 app.py`
 
-# Selective merge operations
-uv run anki-selective extract-overlapping <file1> <file2> <output_file>
-uv run anki-selective generate-selection <file1> <file2> <output_prefix>
-uv run anki-selective create-merged-export <file1> <file2> <selection_file> <output_file>
-```
+## Architecture
 
-### Legacy Installation (without uv)
-```bash
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### Package Structure
+- **src/anki_differ/**: Main package with proper Python package organization
+- **src/anki_differ/cli/**: Command-line interfaces (diff, merge, selective, web)
+- **src/anki_differ/core/**: Core functionality (diff algorithms, merge logic)
+- **src/anki_differ/web/**: Flask web application for visual interface
 
-# Install dependencies
-pip install flask
+### Core Components
+- **Diff Engine** (`src/anki_differ/core/diff.py`): Main comparison logic with functions like `load_anki_export()`, `parse_anki_export()`, `find_missing_cards()`
+- **Web Interface** (`src/anki_differ/web/app.py`): Flask-based UI for file upload, comparison visualization, and selective merging
+- **CLI Entry Points** (`src/anki_differ/cli/main.py`): Unified command-line interface with subcommands
 
-# Run the web app directly
-python -m anki_differ.cli.web
-```
+### Test Architecture
+- **Unit Tests** (`tests/unit/`): Fast, isolated tests for individual functions (target: 90% coverage)
+- **Integration Tests** (`tests/integration/`): API endpoints and system components (target: 85% coverage)
+- **E2E Tests** (`tests/e2e/`): Complete user workflows with browser automation
+- **Performance Tests** (`tests/performance/`): Load testing and benchmarking
+- **Test Fixtures** (`tests/fixtures/`): Includes `test_data_factory.py` for generating test datasets
 
-## High-Level Architecture
+### Configuration
+- **Build System**: Uses `pyproject.toml` with Hatchling
+- **Testing**: Configured with `pytest.ini` supporting markers (unit, integration, e2e, performance, slow)
+- **Dependencies**: Flask, requests>=2.32.4 (Python >=3.8 required)
 
-### Data Flow
-1. **Input**: Two Anki export files (tab-separated format with `#separator:tab` header)
-2. **Comparison**: Cards are matched by question text, categorized as:
-   - Identical (same question & answer)
-   - Different (same question, different answer)
-   - Unique to file1/file2
-3. **Selection**: Users choose which version to keep via web UI or CLI
-4. **Output**: Merged Anki export file preserving the original format
+## Current Development
 
-### Key Components
+- **Active Branch**: `feature/similar_cards` - implementing similar card matching functionality
+- **Purpose**: Identify similar cards across exports with configurable similarity thresholds
+- **Status**: Feature development in progress
 
-**Web Application** (`/src/anki_differ/web/app.py`):
-- Flask app serving the web interface
-- Routes: `/` (upload), `/select` (card selection), `/generate_export` (download)
-- Data persisted in `/src/data/comparison_data.json` between requests
-- Templates in `/templates/` directory
+## Important Notes
 
-**Core Logic** (`/src/anki_differ/core/`):
-- Card parsing: Handles multi-line content and malformed inputs
-- Question-based matching: Questions serve as unique identifiers
-- Default selections: All cards included by default, conflicts default to file1
-
-**File Structure**:
-- Entry points: uv commands (`anki-web`, `anki-diff`, `anki-merge`, `anki-selective`)
-- Implementation: `/src/anki_differ/` proper Python package structure
-- CLI modules: `/src/anki_differ/cli/` for command-line interfaces
-- Core modules: `/src/anki_differ/core/` for business logic
-- Web modules: `/src/anki_differ/web/` for web interface
-- Data storage: `/src/data/` for comparison results, `/src/uploads/` for uploaded files
-
-### Important Implementation Details
-
-- The web app is stateful, storing comparison data in JSON between requests
-- Cards can contain HTML content which is preserved
-- The comparison uses exact string matching on questions
-- File headers (lines starting with `#`) are preserved from file1 by default
-- Bootstrap 5.3 is used for the UI with tab-based navigation
+- The project uses modern Python package structure with proper src/ layout
+- All CLI commands are defined in `pyproject.toml` as entry points
+- Test framework is comprehensive with clear separation of test types
+- Web interface provides visual card comparison and interactive selection
+- The tool handles Unicode characters and large datasets
+- Session management and temporary file cleanup are handled by the web interface
