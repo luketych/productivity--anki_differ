@@ -1,12 +1,13 @@
 ---
 id: task-3
 title: Implement Text Similarity Algorithm
-status: Complete
+status: Done
 assignee: []
 created_date: '2025-07-08'
 updated_date: '2025-07-09'
 labels: [high-priority, algorithm]
 dependencies: [task-2]
+commit_hash: 5182313
 ---
 
 ## Description

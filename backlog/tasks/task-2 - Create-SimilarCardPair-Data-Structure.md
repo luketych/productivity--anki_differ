@@ -1,12 +1,13 @@
 ---
 id: task-2
 title: Create SimilarCardPair Data Structure
-status: Completed
+status: Done
 assignee: []
 created_date: '2025-07-08'
 updated_date: '2025-07-08'
 labels: [high-priority, data-structure]
 dependencies: [task-1]
+commit_hash: 7de02fb
 ---
 
 ## Description

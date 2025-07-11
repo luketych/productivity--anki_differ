@@ -1,12 +1,13 @@
 ---
 id: task-1
 title: Analyze and Extend Card Data Structure
-status: Completed
+status: Done
 assignee: []
 created_date: '2025-07-08'
 updated_date: '2025-07-08'
 labels: [high-priority, foundation]
 dependencies: []
+commit_hash: 4837941
 ---
 
 ## Description

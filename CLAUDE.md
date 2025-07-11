@@ -8,14 +8,16 @@ This is the Anki Export Comparison Tool (anki-diff-tool) - a Python package that
 
 ## Key Commands
 
+**IMPORTANT**: Use `uv` for all Python commands. Do not use `python` or `python3` directly.
+
 ### Development
-- **Install dependencies**: `pip install -e .` (installs in development mode)
-- **Run tests**: `pytest` (runs all tests in tests/ directory)
+- **Install dependencies**: `uv pip install -e .` (installs in development mode)
+- **Run tests**: `uv run pytest` (runs all tests in tests/ directory)
 - **Run specific test types**: 
-  - `pytest tests/unit/` (unit tests only)
-  - `pytest tests/integration/` (integration tests only)
-  - `pytest tests/e2e/` (end-to-end tests only)
-- **Run single test**: `pytest tests/unit/test_specific.py::test_function`
+  - `uv run pytest tests/unit/` (unit tests only)
+  - `uv run pytest tests/integration/` (integration tests only)
+  - `uv run pytest tests/e2e/` (end-to-end tests only)
+- **Run single test**: `uv run pytest tests/unit/test_specific.py::test_function`
 
 ### CLI Usage
 - **Diff command**: `anki-diff <file1> <file2>`
@@ -24,9 +26,9 @@ This is the Anki Export Comparison Tool (anki-diff-tool) - a Python package that
 - **Web interface**: `anki-web` (starts Flask server on http://127.0.0.1:5000)
 
 ### Legacy Commands (still functional)
-- **Basic comparison**: `python3 anki_diff.py <file1> <file2>`
-- **Merge exports**: `python3 merge_exports.py <file1> <file2> <output_file>`
-- **Web interface**: `python3 app.py`
+- **Basic comparison**: `uv run python anki_diff.py <file1> <file2>`
+- **Merge exports**: `uv run python merge_exports.py <file1> <file2> <output_file>`
+- **Web interface**: `uv run python app.py`
 
 ## Architecture
 
